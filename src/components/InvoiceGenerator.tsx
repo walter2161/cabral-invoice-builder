@@ -546,7 +546,7 @@ const InvoiceGenerator: React.FC = () => {
                     </div>
                   )}
                   
-                  <div className="space-y-3 md:space-y-6 max-h-96 md:max-h-96 overflow-y-auto">
+                  <div className="space-y-3 md:space-y-6 max-h-96 md:max-h-96 overflow-y-auto bg-muted/60 p-3 rounded-lg border">
                     {productCategories.map((category, categoryIndex) => (
                       <div key={categoryIndex} className="space-y-2 md:space-y-3">
                         <h4 className={`text-xs md:text-md font-semibold border-b pb-1 md:pb-2 ${getCategoryHeaderColor(category.name)}`}>
