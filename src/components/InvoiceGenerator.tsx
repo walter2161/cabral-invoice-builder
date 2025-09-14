@@ -302,23 +302,38 @@ const InvoiceGenerator: React.FC = () => {
   };
 
   const getProductIcon = (productName: string, categoryName: string) => {
-    // Map categories to icons
-    const categoryIcons: { [key: string]: any } = {
-      "Caixas de Açaí": Droplets,
-      "Temperos e Condimentos": Zap,
-      "Bebidas e Achocolatados": Coffee,
-      "Sucos": Wine,
-      "Cereais e Grãos": Wheat,
-      "Farofas e Açúcar": Candy,
-      "Doces e Bananadas": Candy,
-      "Molhos": Soup,
-      "Salgadinhos": Cookie,
-      "Café": Coffee
+    // Map categories to icons and colors
+    const categoryConfig: { [key: string]: { icon: any; color: string; bgColor: string } } = {
+      "Caixas de Açaí": { icon: Droplets, color: "text-purple-600", bgColor: "bg-purple-100" },
+      "Temperos e Condimentos": { icon: Zap, color: "text-orange-600", bgColor: "bg-orange-100" },
+      "Bebidas e Achocolatados": { icon: Coffee, color: "text-brown-600", bgColor: "bg-amber-100" },
+      "Sucos": { icon: Wine, color: "text-red-600", bgColor: "bg-red-100" },
+      "Cereais e Grãos": { icon: Wheat, color: "text-yellow-600", bgColor: "bg-yellow-100" },
+      "Farofas e Açúcar": { icon: Candy, color: "text-pink-600", bgColor: "bg-pink-100" },
+      "Doces e Bananadas": { icon: Candy, color: "text-emerald-600", bgColor: "bg-emerald-100" },
+      "Molhos": { icon: Soup, color: "text-indigo-600", bgColor: "bg-indigo-100" },
+      "Salgadinhos": { icon: Cookie, color: "text-blue-600", bgColor: "bg-blue-100" },
+      "Café": { icon: Coffee, color: "text-stone-600", bgColor: "bg-stone-100" }
     };
 
-    // Get icon from category
-    const IconComponent = categoryIcons[categoryName] || Beef;
-    return IconComponent;
+    return categoryConfig[categoryName] || { icon: Beef, color: "text-gray-600", bgColor: "bg-gray-100" };
+  };
+
+  const getCategoryHeaderColor = (categoryName: string) => {
+    const categoryColors: { [key: string]: string } = {
+      "Caixas de Açaí": "text-purple-600 border-purple-200",
+      "Temperos e Condimentos": "text-orange-600 border-orange-200",
+      "Bebidas e Achocolatados": "text-amber-600 border-amber-200",
+      "Sucos": "text-red-600 border-red-200",
+      "Cereais e Grãos": "text-yellow-600 border-yellow-200",
+      "Farofas e Açúcar": "text-pink-600 border-pink-200",
+      "Doces e Bananadas": "text-emerald-600 border-emerald-200",
+      "Molhos": "text-indigo-600 border-indigo-200",
+      "Salgadinhos": "text-blue-600 border-blue-200",
+      "Café": "text-stone-600 border-stone-200"
+    };
+
+    return categoryColors[categoryName] || "text-gray-600 border-gray-200";
   };
 
   return (
@@ -414,18 +429,19 @@ const InvoiceGenerator: React.FC = () => {
                   <div className="space-y-6 max-h-96 overflow-y-auto">
                     {productCategories.map((category, categoryIndex) => (
                       <div key={categoryIndex} className="space-y-3">
-                        <h4 className="text-md font-semibold text-primary border-b pb-2">
+                        <h4 className={`text-md font-semibold border-b pb-2 ${getCategoryHeaderColor(category.name)}`}>
                           {category.name}
                         </h4>
                         <div className="space-y-3">
                           {category.products.map((product, index) => {
                             const globalIndex = `${categoryIndex}-${index}`;
-                            const IconComponent = getProductIcon(product.name, category.name);
+                            const iconConfig = getProductIcon(product.name, category.name);
+                            const IconComponent = iconConfig.icon;
                             return (
                               <div key={globalIndex} className="grid grid-cols-1 md:grid-cols-6 gap-2 items-end p-3 border rounded-lg">
                                 <div className="md:col-span-3 flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                                    <IconComponent className="w-5 h-5 text-primary" />
+                                  <div className={`w-8 h-8 rounded-lg ${iconConfig.bgColor} flex items-center justify-center`}>
+                                    <IconComponent className={`w-5 h-5 ${iconConfig.color}`} />
                                   </div>
                                   <Label className="text-sm">{product.name}</Label>
                                 </div>
