@@ -558,46 +558,51 @@ const InvoiceGenerator: React.FC = () => {
                             const iconConfig = getProductIcon(product.name, category.name);
                             const IconComponent = iconConfig.icon;
                             return (
-                              <div key={globalIndex} className="grid grid-cols-1 md:grid-cols-6 gap-1 md:gap-2 items-end p-2 md:p-3 border rounded-lg">
-                                <div className="md:col-span-3 flex items-center gap-2 md:gap-3">
+                              <div key={globalIndex} className="p-2 md:p-3 border rounded-lg space-y-2">
+                                {/* Nome do produto */}
+                                <div className="flex items-center gap-2 md:gap-3">
                                   <div className={`w-6 h-6 md:w-8 md:h-8 rounded-lg ${iconConfig.bgColor} flex items-center justify-center`}>
                                     <IconComponent className={`w-3 h-3 md:w-5 md:h-5 ${iconConfig.color}`} />
                                   </div>
                                   <Label className="text-xs md:text-sm">{product.name}</Label>
                                 </div>
-                                <div>
-                                  <Label htmlFor={`qty-${globalIndex}`} className="text-xs text-muted-foreground">
-                                    Quantidade
-                                  </Label>
-                                  <Input
-                                    className="h-7 md:h-10 text-xs md:text-sm"
-                                    id={`qty-${globalIndex}`}
-                                    type="number"
-                                    min="0"
-                                    value={productQuantities[product.name] || ''}
-                                    onChange={(e) => updateQuantity(product.name, parseInt(e.target.value) || 0)}
-                                    placeholder="0"
-                                  />
-                                </div>
-                                <div>
-                                  <Label htmlFor={`price-${globalIndex}`} className="text-xs text-muted-foreground">
-                                    Valor Unitário (USD)
-                                  </Label>
-                                  <Input
-                                    className="h-7 md:h-10 text-xs md:text-sm"
-                                    id={`price-${globalIndex}`}
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    value={productPrices[product.name] || ''}
-                                    onChange={(e) => updatePrice(product.name, parseFloat(e.target.value) || 0)}
-                                    placeholder="0.00"
-                                  />
-                                </div>
-                                <div className="md:col-span-1 text-right">
-                                  <Label className="text-xs text-muted-foreground">Total</Label>
-                                  <div className="font-semibold text-xs md:text-sm">
-                                    ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
+                                
+                                {/* Campos de input - lado a lado no mobile */}
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                  <div>
+                                    <Label htmlFor={`qty-${globalIndex}`} className="text-xs text-muted-foreground">
+                                      Qtd
+                                    </Label>
+                                    <Input
+                                      className="h-7 md:h-10 text-xs md:text-sm"
+                                      id={`qty-${globalIndex}`}
+                                      type="number"
+                                      min="0"
+                                      value={productQuantities[product.name] || ''}
+                                      onChange={(e) => updateQuantity(product.name, parseInt(e.target.value) || 0)}
+                                      placeholder="0"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label htmlFor={`price-${globalIndex}`} className="text-xs text-muted-foreground">
+                                      Valor
+                                    </Label>
+                                    <Input
+                                      className="h-7 md:h-10 text-xs md:text-sm"
+                                      id={`price-${globalIndex}`}
+                                      type="number"
+                                      min="0"
+                                      step="0.01"
+                                      value={productPrices[product.name] || ''}
+                                      onChange={(e) => updatePrice(product.name, parseFloat(e.target.value) || 0)}
+                                      placeholder="0.00"
+                                    />
+                                  </div>
+                                  <div className="col-span-2 md:col-span-1 text-right">
+                                    <Label className="text-xs text-muted-foreground">Total</Label>
+                                    <div className="font-semibold text-xs md:text-sm">
+                                      ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
