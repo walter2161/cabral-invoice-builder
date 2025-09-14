@@ -405,48 +405,55 @@ const InvoiceGenerator: React.FC = () => {
             </CardHeader>
             <CardContent className="p-3 md:p-6">
               <form onSubmit={handleSubmit} className="space-y-3 md:space-y-6">
-                <div className="grid grid-cols-1 gap-2 md:gap-4">
-                  <div>
-                    <Label htmlFor="invoiceNumber" className="text-xs md:text-sm">Número do Invoice</Label>
-                    <Input
-                      id="invoiceNumber"
-                      className="h-8 md:h-10 text-sm"
-                      value={formData.invoiceNumber}
-                      onChange={(e) => setFormData(prev => ({ ...prev, invoiceNumber: e.target.value }))}
-                      placeholder="Ex: INV-001"
-                      required
-                    />
+                <div className="space-y-3">
+                  {/* Invoice, Nome e Cidade na mesma linha */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <div>
+                      <Label htmlFor="invoiceNumber" className="text-xs md:text-sm">Número Invoice</Label>
+                      <Input
+                        id="invoiceNumber"
+                        className="h-8 md:h-10 text-sm"
+                        value={formData.invoiceNumber}
+                        onChange={(e) => setFormData(prev => ({ ...prev, invoiceNumber: e.target.value }))}
+                        placeholder="INV-001"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="clientName" className="text-xs md:text-sm">Nome do Cliente</Label>
+                      <Input
+                        id="clientName"
+                        className="h-8 md:h-10 text-sm"
+                        value={formData.clientName}
+                        onChange={(e) => setFormData(prev => ({ ...prev, clientName: e.target.value }))}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="deliveryCity" className="text-xs md:text-sm">Cidade/Estado</Label>
+                      <Input
+                        id="deliveryCity"
+                        className="h-8 md:h-10 text-sm"
+                        value={formData.deliveryCity}
+                        onChange={(e) => setFormData(prev => ({ ...prev, deliveryCity: e.target.value }))}
+                        required
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor="clientName" className="text-xs md:text-sm">Nome do Cliente ou Empresa</Label>
-                    <Input
-                      id="clientName"
-                      className="h-8 md:h-10 text-sm"
-                      value={formData.clientName}
-                      onChange={(e) => setFormData(prev => ({ ...prev, clientName: e.target.value }))}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="deliveryCity" className="text-xs md:text-sm">Cidade/Estado de Entrega</Label>
-                    <Input
-                      id="deliveryCity"
-                      className="h-8 md:h-10 text-sm"
-                      value={formData.deliveryCity}
-                      onChange={(e) => setFormData(prev => ({ ...prev, deliveryCity: e.target.value }))}
-                      required
-                    />
-                  </div>
-                                <div className="md:col-span-1">
-                    <Label htmlFor="orderDate" className="text-xs md:text-sm">Data do Pedido</Label>
-                    <Input
-                      id="orderDate"
-                      className="h-8 md:h-10 text-sm"
-                      type="date"
-                      value={formData.orderDate}
-                      onChange={(e) => setFormData(prev => ({ ...prev, orderDate: e.target.value }))}
-                      required
-                    />
+                  
+                  {/* Datas na mesma linha */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label htmlFor="orderDate" className="text-xs md:text-sm">Data do Pedido</Label>
+                      <Input
+                        id="orderDate"
+                        className="h-8 md:h-10 text-sm"
+                        type="date"
+                        value={formData.orderDate}
+                        onChange={(e) => setFormData(prev => ({ ...prev, orderDate: e.target.value }))}
+                        required
+                      />
+                    </div>
                     <div>
                       <Label htmlFor="paymentDate" className="text-xs md:text-sm">Data de Pagamento</Label>
                       <Input
