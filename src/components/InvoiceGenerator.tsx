@@ -546,7 +546,7 @@ const InvoiceGenerator: React.FC = () => {
                     </div>
                   )}
                   
-                  <div className="space-y-3 md:space-y-6 max-h-80 md:max-h-96 overflow-y-auto">
+                  <div className="space-y-3 md:space-y-6 max-h-96 md:max-h-96 overflow-y-auto">
                     {productCategories.map((category, categoryIndex) => (
                       <div key={categoryIndex} className="space-y-2 md:space-y-3">
                         <h4 className={`text-xs md:text-md font-semibold border-b pb-1 md:pb-2 ${getCategoryHeaderColor(category.name)}`}>
@@ -567,8 +567,8 @@ const InvoiceGenerator: React.FC = () => {
                                   <Label className="text-xs md:text-sm">{product.name}</Label>
                                 </div>
                                 
-                                {/* Campos de input - lado a lado no mobile */}
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                {/* Campos de input - todos na mesma linha */}
+                                <div className="grid grid-cols-3 gap-2">
                                   <div>
                                     <Label htmlFor={`qty-${globalIndex}`} className="text-xs text-muted-foreground">
                                       Qtd
@@ -598,9 +598,9 @@ const InvoiceGenerator: React.FC = () => {
                                       placeholder="0.00"
                                     />
                                   </div>
-                                  <div className="col-span-2 md:col-span-1 text-right">
+                                  <div className="text-right">
                                     <Label className="text-xs text-muted-foreground">Total</Label>
-                                    <div className="font-semibold text-xs md:text-sm">
+                                    <div className="font-semibold text-xs md:text-sm bg-muted p-1 rounded text-center">
                                       ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
                                     </div>
                                   </div>
