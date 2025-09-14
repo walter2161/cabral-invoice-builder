@@ -204,7 +204,6 @@ const InvoiceGenerator: React.FC = () => {
   const [manualItems, setManualItems] = useState<ManualItem[]>(() => {
     const saved = localStorage.getItem('invoiceManualItems');
     if (saved) {
-    if (saved) {
       return JSON.parse(saved);
     }
     return [];
