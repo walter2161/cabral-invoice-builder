@@ -426,6 +426,73 @@ const InvoiceGenerator: React.FC = () => {
                     </Button>
                   </div>
                   
+                  {/* Manual Items - moved to top */}
+                  {manualItems.length > 0 && (
+                    <div className="space-y-3 p-4 bg-muted/30 rounded-lg border-2 border-dashed">
+                      <h4 className="text-md font-semibold text-primary">Itens Manuais</h4>
+                      {manualItems.map((item) => (
+                        <div key={item.id} className="grid grid-cols-1 md:grid-cols-5 gap-2 items-end p-3 border rounded-lg bg-background">
+                          <div>
+                            <Label htmlFor={`manual-product-${item.id}`} className="text-xs text-muted-foreground">
+                              Nome do Produto
+                            </Label>
+                            <Input
+                              id={`manual-product-${item.id}`}
+                              type="text"
+                              value={item.product}
+                              onChange={(e) => updateManualItem(item.id, 'product', e.target.value)}
+                              placeholder="Nome do produto"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor={`manual-qty-${item.id}`} className="text-xs text-muted-foreground">
+                              Quantidade
+                            </Label>
+                            <Input
+                              id={`manual-qty-${item.id}`}
+                              type="number"
+                              min="0"
+                              value={item.quantity || ''}
+                              onChange={(e) => updateManualItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
+                              placeholder="0"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor={`manual-price-${item.id}`} className="text-xs text-muted-foreground">
+                              Valor Unitário (USD)
+                            </Label>
+                            <Input
+                              id={`manual-price-${item.id}`}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={item.unitPrice || ''}
+                              onChange={(e) => updateManualItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                              placeholder="0.00"
+                            />
+                          </div>
+                          <div className="text-right">
+                            <Label className="text-xs text-muted-foreground">Total</Label>
+                            <div className="font-semibold">
+                              ${(item.quantity * item.unitPrice).toFixed(2)}
+                            </div>
+                          </div>
+                          <div className="flex justify-center">
+                            <Button
+                              type="button"
+                              onClick={() => removeManualItem(item.id)}
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
                   <div className="space-y-6 max-h-96 overflow-y-auto">
                     {productCategories.map((category, categoryIndex) => (
                       <div key={categoryIndex} className="space-y-3">
