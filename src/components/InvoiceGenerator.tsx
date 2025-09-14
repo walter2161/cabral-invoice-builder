@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -101,23 +101,66 @@ const products: Product[] = [
 const InvoiceGenerator: React.FC = () => {
   const [showInvoice, setShowInvoice] = useState(false);
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
-  const [formData, setFormData] = useState({
-    invoiceNumber: '',
-    clientName: '',
-    deliveryCity: '',
-    orderDate: new Date().toISOString().split('T')[0],
-    paymentDate: '',
+  
+  // Load data from localStorage or use defaults
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('invoiceFormData');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {
+      invoiceNumber: '',
+      clientName: '',
+      deliveryCity: '',
+      orderDate: new Date().toISOString().split('T')[0],
+      paymentDate: '',
+    };
   });
   
-  const [productQuantities, setProductQuantities] = useState<{ [key: string]: number }>({});
+  const [productQuantities, setProductQuantities] = useState<{ [key: string]: number }>(() => {
+    const saved = localStorage.getItem('invoiceProductQuantities');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {};
+  });
+  
   const [productPrices, setProductPrices] = useState<{ [key: string]: number }>(() => {
+    const saved = localStorage.getItem('invoiceProductPrices');
+    if (saved) {
+      return JSON.parse(saved);
+    }
     const prices: { [key: string]: number } = {};
     products.forEach(product => {
       prices[product.name] = product.defaultPrice || 0;
     });
     return prices;
   });
-  const [manualItems, setManualItems] = useState<ManualItem[]>([]);
+  
+  const [manualItems, setManualItems] = useState<ManualItem[]>(() => {
+    const saved = localStorage.getItem('invoiceManualItems');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return [];
+  });
+
+  // Save to localStorage whenever data changes
+  useEffect(() => {
+    localStorage.setItem('invoiceFormData', JSON.stringify(formData));
+  }, [formData]);
+
+  useEffect(() => {
+    localStorage.setItem('invoiceProductQuantities', JSON.stringify(productQuantities));
+  }, [productQuantities]);
+
+  useEffect(() => {
+    localStorage.setItem('invoiceProductPrices', JSON.stringify(productPrices));
+  }, [productPrices]);
+
+  useEffect(() => {
+    localStorage.setItem('invoiceManualItems', JSON.stringify(manualItems));
+  }, [manualItems]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
