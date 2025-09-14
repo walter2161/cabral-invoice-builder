@@ -36,67 +36,122 @@ interface InvoiceData {
   grandTotal: number;
 }
 
-const products: Product[] = [
-  // Mix de produtos principais
-  { name: "Cxs 300ml", defaultPrice: 26.85 },
-  { name: "Cxs de 1 litro", defaultPrice: 28.35 },
-  { name: "Cxs de 1,5 litros", defaultPrice: 29.85 },
-  { name: "Sazon carne (48 UND)", defaultPrice: 55.35 },
-  { name: "Nescau 350gr", defaultPrice: 14.42 },
-  { name: "Feijão 1kg (fardo)", defaultPrice: 14.24 },
-  { name: "Feijão carioca (fardo)", defaultPrice: 30.00 },
-  { name: "Farofa de milho", defaultPrice: 28.50 },
-  { name: "Suco Maguary concentrado", defaultPrice: 18.00 },
-  { name: "Bananada Tachao com chocolate - 25 x 250g", defaultPrice: 210.00 },
-  { name: "Bananada Tachao Natural - 25 x 250g", defaultPrice: 162.00 },
-  { name: "Molho Pomarola Tradicional - 24 x 300ml", defaultPrice: 30.00 },
-  { name: "Molho Pomarola Manjericao - 24 x 300ml", defaultPrice: 30.00 },
-  
-  // Produtos adicionais
-  { name: "Açúcar União Refinado 10x1000g", defaultPrice: 0 },
-  { name: "Fandangos Presunto", defaultPrice: 0 },
-  { name: "Fandangos Queijo", defaultPrice: 0 },
-  { name: "Cebolitos", defaultPrice: 0 },
-  { name: "Sal Parrilha c/ervas finas Odicasa", defaultPrice: 0 },
-  { name: "Sal de Parrilha c/chimichurri Odicasa", defaultPrice: 0 },
-  { name: "Sal de Parrilha c/alho Odicasa - 9x4", defaultPrice: 0 },
-  { name: "Sal de Parrilha c/paprica Odicasa", defaultPrice: 0 },
-  { name: "Sal de Parrilha Odicasa - 9x500g", defaultPrice: 0 },
-  { name: "Sal refinado Lebre", defaultPrice: 0 },
-  { name: "Sazon Feijao - 48 x 60g", defaultPrice: 0 },
-  { name: "Canjiquinha Caldo Bom - Quirela", defaultPrice: 0 },
-  { name: "Guaraviton Ginseng", defaultPrice: 0 },
-  { name: "Guaraviton Acai", defaultPrice: 0 },
-  { name: "Café Melita Vacuo", defaultPrice: 0 },
-  { name: "Café Pilao Tradicional Vacuo", defaultPrice: 0 },
-  { name: "Arroz Rey Arthur", defaultPrice: 0 },
-  { name: "Mate Leao Natural 6x450ml", defaultPrice: 0 },
-  { name: "Mate Leao Limao 6x450ml", defaultPrice: 0 },
-  { name: "Mate Leao Natural 6x1500ml", defaultPrice: 0 },
-  { name: "Mate Leao Limao 6x1500ml", defaultPrice: 0 },
-  { name: "Cheetos Bola", defaultPrice: 0 },
-  { name: "Cheetos Onda", defaultPrice: 0 },
-  { name: "Bananada Tachao Natural Display", defaultPrice: 0 },
-  { name: "Bananada Tachao c/chocolate Display", defaultPrice: 0 },
-  { name: "Bananada Tachao c/canela 25x200g", defaultPrice: 0 },
-  { name: "Bananada Tacao c/canela Display", defaultPrice: 0 },
-  { name: "Bananada Tachao s/açúcar 25x200g", defaultPrice: 0 },
-  { name: "Bananada Tacha s/açúcar Display", defaultPrice: 0 },
-  { name: "Suco de Uva Grand Valle - 12 x 300", defaultPrice: 0 },
-  { name: "Suco de Uva Grand Valle - 06 x 100", defaultPrice: 0 },
-  { name: "Suco de Uva Grand Valle - 06 x 150", defaultPrice: 0 },
-  { name: "Feijao Preto Caldo Bom - 10 x 1000", defaultPrice: 0 },
-  { name: "Feijao Carioca Caldo Bom - 10 x 10", defaultPrice: 0 },
-  { name: "Farofa Milho Caldo Bom - 24 x 400g", defaultPrice: 0 },
-  { name: "Suco Concentrado Caju Maguary", defaultPrice: 0 },
-  { name: "Toddy 370g", defaultPrice: 0 },
-  { name: "Toddy 750g", defaultPrice: 0 },
-  { name: "Toddy 1800g", defaultPrice: 0 },
-  { name: "Tubaina Funada 2 litros pet. (6x200)", defaultPrice: 0 },
-  { name: "Tubaina Funada Garrafa Vidro (6x60)", defaultPrice: 0 },
-  { name: "Suco Concentrado Maguary - Maracujá", defaultPrice: 0 },
-  { name: "Sal Grosso Lebre", defaultPrice: 0 }
+interface ProductCategory {
+  name: string;
+  products: Product[];
+}
+
+const productCategories: ProductCategory[] = [
+  {
+    name: "Caixas de Açaí",
+    products: [
+      { name: "Caixas de açaí 300ml", defaultPrice: 26.85 },
+      { name: "Caixas de açaí 1 litro", defaultPrice: 28.35 },
+      { name: "Caixas de açaí 1,5 litros", defaultPrice: 29.85 },
+    ]
+  },
+  {
+    name: "Temperos e Condimentos",
+    products: [
+      { name: "Sazon carne (48 UND)", defaultPrice: 55.35 },
+      { name: "Sazon Feijao - 48 x 60g", defaultPrice: 0 },
+      { name: "Sal Parrilha c/ervas finas Odicasa", defaultPrice: 0 },
+      { name: "Sal de Parrilha c/chimichurri Odicasa", defaultPrice: 0 },
+      { name: "Sal de Parrilha c/alho Odicasa - 9x4", defaultPrice: 0 },
+      { name: "Sal de Parrilha c/paprica Odicasa", defaultPrice: 0 },
+      { name: "Sal de Parrilha Odicasa - 9x500g", defaultPrice: 0 },
+      { name: "Sal refinado Lebre", defaultPrice: 0 },
+      { name: "Sal Grosso Lebre", defaultPrice: 0 },
+    ]
+  },
+  {
+    name: "Bebidas e Achocolatados",
+    products: [
+      { name: "Nescau 350gr", defaultPrice: 14.42 },
+      { name: "Toddy 370g", defaultPrice: 0 },
+      { name: "Toddy 750g", defaultPrice: 0 },
+      { name: "Toddy 1800g", defaultPrice: 0 },
+      { name: "Guaraviton Ginseng", defaultPrice: 0 },
+      { name: "Guaraviton Acai", defaultPrice: 0 },
+      { name: "Mate Leao Natural 6x450ml", defaultPrice: 0 },
+      { name: "Mate Leao Limao 6x450ml", defaultPrice: 0 },
+      { name: "Mate Leao Natural 6x1500ml", defaultPrice: 0 },
+      { name: "Mate Leao Limao 6x1500ml", defaultPrice: 0 },
+      { name: "Tubaina Funada 2 litros pet. (6x200)", defaultPrice: 0 },
+      { name: "Tubaina Funada Garrafa Vidro (6x60)", defaultPrice: 0 },
+    ]
+  },
+  {
+    name: "Sucos",
+    products: [
+      { name: "Suco Maguary concentrado", defaultPrice: 18.00 },
+      { name: "Suco de Uva Grand Valle - 12 x 300", defaultPrice: 0 },
+      { name: "Suco de Uva Grand Valle - 06 x 100", defaultPrice: 0 },
+      { name: "Suco de Uva Grand Valle - 06 x 150", defaultPrice: 0 },
+      { name: "Suco Concentrado Caju Maguary", defaultPrice: 0 },
+      { name: "Suco Concentrado Maguary - Maracujá", defaultPrice: 0 },
+    ]
+  },
+  {
+    name: "Cereais e Grãos",
+    products: [
+      { name: "Feijão 1kg (fardo)", defaultPrice: 14.24 },
+      { name: "Feijão carioca (fardo)", defaultPrice: 30.00 },
+      { name: "Feijao Preto Caldo Bom - 10 x 1000", defaultPrice: 0 },
+      { name: "Feijao Carioca Caldo Bom - 10 x 10", defaultPrice: 0 },
+      { name: "Arroz Rey Arthur", defaultPrice: 0 },
+      { name: "Canjiquinha Caldo Bom - Quirela", defaultPrice: 0 },
+    ]
+  },
+  {
+    name: "Farofas e Açúcar",
+    products: [
+      { name: "Farofa de milho", defaultPrice: 28.50 },
+      { name: "Farofa Milho Caldo Bom - 24 x 400g", defaultPrice: 0 },
+      { name: "Açúcar União Refinado 10x1000g", defaultPrice: 0 },
+    ]
+  },
+  {
+    name: "Doces e Bananadas",
+    products: [
+      { name: "Bananada Tachao com chocolate - 25 x 250g", defaultPrice: 210.00 },
+      { name: "Bananada Tachao Natural - 25 x 250g", defaultPrice: 162.00 },
+      { name: "Bananada Tachao Natural Display", defaultPrice: 0 },
+      { name: "Bananada Tachao c/chocolate Display", defaultPrice: 0 },
+      { name: "Bananada Tachao c/canela 25x200g", defaultPrice: 0 },
+      { name: "Bananada Tacao c/canela Display", defaultPrice: 0 },
+      { name: "Bananada Tachao s/açúcar 25x200g", defaultPrice: 0 },
+      { name: "Bananada Tacha s/açúcar Display", defaultPrice: 0 },
+    ]
+  },
+  {
+    name: "Molhos",
+    products: [
+      { name: "Molho Pomarola Tradicional - 24 x 300ml", defaultPrice: 30.00 },
+      { name: "Molho Pomarola Manjericao - 24 x 300ml", defaultPrice: 30.00 },
+    ]
+  },
+  {
+    name: "Salgadinhos",
+    products: [
+      { name: "Fandangos Presunto", defaultPrice: 0 },
+      { name: "Fandangos Queijo", defaultPrice: 0 },
+      { name: "Cebolitos", defaultPrice: 0 },
+      { name: "Cheetos Bola", defaultPrice: 0 },
+      { name: "Cheetos Onda", defaultPrice: 0 },
+    ]
+  },
+  {
+    name: "Café",
+    products: [
+      { name: "Café Melita Vacuo", defaultPrice: 0 },
+      { name: "Café Pilao Tradicional Vacuo", defaultPrice: 0 },
+    ]
+  }
 ];
+
+// Flatten all products for backward compatibility
+const products: Product[] = productCategories.flatMap(category => category.products);
 
 const InvoiceGenerator: React.FC = () => {
   const [showInvoice, setShowInvoice] = useState(false);
@@ -336,44 +391,56 @@ const InvoiceGenerator: React.FC = () => {
                     </Button>
                   </div>
                   
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {products.map((product, index) => (
-                      <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-2 items-end p-3 border rounded-lg">
-                        <div>
-                          <Label className="text-sm">{product.name}</Label>
-                        </div>
-                        <div>
-                          <Label htmlFor={`qty-${index}`} className="text-xs text-muted-foreground">
-                            Quantidade
-                          </Label>
-                          <Input
-                            id={`qty-${index}`}
-                            type="number"
-                            min="0"
-                            value={productQuantities[product.name] || ''}
-                            onChange={(e) => updateQuantity(product.name, parseInt(e.target.value) || 0)}
-                            placeholder="0"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor={`price-${index}`} className="text-xs text-muted-foreground">
-                            Valor Unitário (USD)
-                          </Label>
-                          <Input
-                            id={`price-${index}`}
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={productPrices[product.name] || ''}
-                            onChange={(e) => updatePrice(product.name, parseFloat(e.target.value) || 0)}
-                            placeholder="0.00"
-                          />
-                        </div>
-                        <div className="text-right">
-                          <Label className="text-xs text-muted-foreground">Total</Label>
-                          <div className="font-semibold">
-                            ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
-                          </div>
+                  <div className="space-y-6 max-h-96 overflow-y-auto">
+                    {productCategories.map((category, categoryIndex) => (
+                      <div key={categoryIndex} className="space-y-3">
+                        <h4 className="text-md font-semibold text-primary border-b pb-2">
+                          {category.name}
+                        </h4>
+                        <div className="space-y-3">
+                          {category.products.map((product, index) => {
+                            const globalIndex = `${categoryIndex}-${index}`;
+                            return (
+                              <div key={globalIndex} className="grid grid-cols-1 md:grid-cols-4 gap-2 items-end p-3 border rounded-lg">
+                                <div>
+                                  <Label className="text-sm">{product.name}</Label>
+                                </div>
+                                <div>
+                                  <Label htmlFor={`qty-${globalIndex}`} className="text-xs text-muted-foreground">
+                                    Quantidade
+                                  </Label>
+                                  <Input
+                                    id={`qty-${globalIndex}`}
+                                    type="number"
+                                    min="0"
+                                    value={productQuantities[product.name] || ''}
+                                    onChange={(e) => updateQuantity(product.name, parseInt(e.target.value) || 0)}
+                                    placeholder="0"
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor={`price-${globalIndex}`} className="text-xs text-muted-foreground">
+                                    Valor Unitário (USD)
+                                  </Label>
+                                  <Input
+                                    id={`price-${globalIndex}`}
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={productPrices[product.name] || ''}
+                                    onChange={(e) => updatePrice(product.name, parseFloat(e.target.value) || 0)}
+                                    placeholder="0.00"
+                                  />
+                                </div>
+                                <div className="text-right">
+                                  <Label className="text-xs text-muted-foreground">Total</Label>
+                                  <div className="font-semibold">
+                                    ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     ))}
