@@ -208,9 +208,8 @@ const InvoiceGenerator: React.FC = () => {
       {/* Header */}
       <div className="bg-gradient-header text-primary-foreground py-8 mb-8">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <img src={logoImage} alt="Don Cabral Logo" className="h-16 w-auto" />
-            <h1 className="text-4xl font-bold">Don Cabral</h1>
+          <div className="flex items-center justify-center mb-4">
+            <img src={logoImage} alt="Don Cabral Logo" className="h-20 w-auto" />
           </div>
           <p className="text-lg opacity-90">Invoice Generator</p>
         </div>
