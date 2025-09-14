@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Plus, X } from 'lucide-react';
+import logoImage from '@/assets/logo-don-cabral.png';
 
 interface Product {
   name: string;
@@ -15,6 +17,13 @@ interface InvoiceItem {
   quantity: number;
   unitPrice: number;
   total: number;
+}
+
+interface ManualItem {
+  id: string;
+  product: string;
+  quantity: number;
+  unitPrice: number;
 }
 
 interface InvoiceData {
@@ -108,6 +117,7 @@ const InvoiceGenerator: React.FC = () => {
     });
     return prices;
   });
+  const [manualItems, setManualItems] = useState<ManualItem[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,6 +135,20 @@ const InvoiceGenerator: React.FC = () => {
           product: product.name,
           quantity,
           unitPrice,
+          total
+        });
+        grandTotal += total;
+      }
+    });
+
+    // Add manual items
+    manualItems.forEach(item => {
+      if (item.quantity > 0 && item.unitPrice > 0) {
+        const total = item.quantity * item.unitPrice;
+        items.push({
+          product: item.product,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
           total
         });
         grandTotal += total;
@@ -159,12 +183,35 @@ const InvoiceGenerator: React.FC = () => {
     }));
   };
 
+  const addManualItem = () => {
+    const newItem: ManualItem = {
+      id: Date.now().toString(),
+      product: '',
+      quantity: 0,
+      unitPrice: 0
+    };
+    setManualItems(prev => [...prev, newItem]);
+  };
+
+  const removeManualItem = (id: string) => {
+    setManualItems(prev => prev.filter(item => item.id !== id));
+  };
+
+  const updateManualItem = (id: string, field: keyof ManualItem, value: string | number) => {
+    setManualItems(prev => prev.map(item => 
+      item.id === id ? { ...item, [field]: value } : item
+    ));
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-gradient-header text-primary-foreground py-8 mb-8">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-2">Don Cabral</h1>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <img src={logoImage} alt="Don Cabral Logo" className="h-16 w-auto" />
+            <h1 className="text-4xl font-bold">Don Cabral</h1>
+          </div>
           <p className="text-lg opacity-90">Invoice Generator</p>
         </div>
       </div>
@@ -233,7 +280,20 @@ const InvoiceGenerator: React.FC = () => {
                 <Separator />
 
                 <div>
-                  <h3 className="text-lg font-semibold mb-4 text-primary">Produtos</h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-primary">Produtos</h3>
+                    <Button 
+                      type="button" 
+                      onClick={addManualItem} 
+                      variant="outline" 
+                      size="sm"
+                      className="flex items-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Adicionar Item Manual
+                    </Button>
+                  </div>
+                  
                   <div className="space-y-3 max-h-96 overflow-y-auto">
                     {products.map((product, index) => (
                       <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-2 items-end p-3 border rounded-lg">
@@ -272,6 +332,68 @@ const InvoiceGenerator: React.FC = () => {
                           <div className="font-semibold">
                             ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
                           </div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* Manual Items */}
+                    {manualItems.map((item) => (
+                      <div key={item.id} className="grid grid-cols-1 md:grid-cols-5 gap-2 items-end p-3 border rounded-lg bg-muted/30">
+                        <div>
+                          <Label htmlFor={`manual-product-${item.id}`} className="text-xs text-muted-foreground">
+                            Nome do Produto
+                          </Label>
+                          <Input
+                            id={`manual-product-${item.id}`}
+                            type="text"
+                            value={item.product}
+                            onChange={(e) => updateManualItem(item.id, 'product', e.target.value)}
+                            placeholder="Nome do produto"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`manual-qty-${item.id}`} className="text-xs text-muted-foreground">
+                            Quantidade
+                          </Label>
+                          <Input
+                            id={`manual-qty-${item.id}`}
+                            type="number"
+                            min="0"
+                            value={item.quantity || ''}
+                            onChange={(e) => updateManualItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
+                            placeholder="0"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`manual-price-${item.id}`} className="text-xs text-muted-foreground">
+                            Valor Unitário (USD)
+                          </Label>
+                          <Input
+                            id={`manual-price-${item.id}`}
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={item.unitPrice || ''}
+                            onChange={(e) => updateManualItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                            placeholder="0.00"
+                          />
+                        </div>
+                        <div className="text-right">
+                          <Label className="text-xs text-muted-foreground">Total</Label>
+                          <div className="font-semibold">
+                            ${(item.quantity * item.unitPrice).toFixed(2)}
+                          </div>
+                        </div>
+                        <div className="flex justify-center">
+                          <Button
+                            type="button"
+                            onClick={() => removeManualItem(item.id)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
                     ))}
