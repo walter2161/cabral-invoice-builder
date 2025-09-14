@@ -706,6 +706,9 @@ const InvoiceGenerator: React.FC = () => {
               <CardContent className="p-8">
                 {/* Invoice Header */}
                 <div className="text-center mb-8">
+                  <div className="bg-black p-4 rounded-lg mb-4 inline-block">
+                    <img src={logoImage} alt="Don Cabral Logo" className="h-[60px] w-auto" />
+                  </div>
                   <h1 className="text-3xl font-bold text-primary mb-2">
                     INVOICE #{invoiceData?.invoiceNumber}
                   </h1>
