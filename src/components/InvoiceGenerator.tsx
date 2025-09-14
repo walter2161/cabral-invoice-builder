@@ -385,31 +385,32 @@ const InvoiceGenerator: React.FC = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       {!showInvoice && (
-        <div className="bg-gradient-header text-primary-foreground py-8 mb-8">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <div className="flex items-center justify-center mb-4">
-              <img src={logoImage} alt="Don Cabral Logo" className="h-20 w-auto" />
+        <div className="bg-gradient-header text-primary-foreground py-4 md:py-8 mb-4 md:mb-8">
+          <div className="max-w-4xl mx-auto px-2 md:px-4 text-center">
+            <div className="flex items-center justify-center mb-2 md:mb-4">
+              <img src={logoImage} alt="Don Cabral Logo" className="h-12 md:h-20 w-auto" />
             </div>
-            <p className="text-lg opacity-90">Invoice Generator</p>
+            <p className="text-sm md:text-lg opacity-90">Invoice Generator</p>
           </div>
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto px-4 pb-12">
+      <div className="max-w-4xl mx-auto px-2 md:px-4 pb-4 md:pb-12">
         {!showInvoice ? (
           <Card className="shadow-invoice">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center text-primary">
+            <CardHeader className="pb-3 md:pb-6">
+              <CardTitle className="text-lg md:text-2xl text-center text-primary">
                 Gerar Nova Invoice
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="p-3 md:p-6">
+              <form onSubmit={handleSubmit} className="space-y-3 md:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
                   <div>
-                    <Label htmlFor="invoiceNumber">Número do Invoice</Label>
+                    <Label htmlFor="invoiceNumber" className="text-xs md:text-sm">Número do Invoice</Label>
                     <Input
                       id="invoiceNumber"
+                      className="h-8 md:h-10 text-sm"
                       value={formData.invoiceNumber}
                       onChange={(e) => setFormData(prev => ({ ...prev, invoiceNumber: e.target.value }))}
                       placeholder="Ex: INV-001"
@@ -417,27 +418,30 @@ const InvoiceGenerator: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="clientName">Nome do Cliente ou Empresa</Label>
+                    <Label htmlFor="clientName" className="text-xs md:text-sm">Nome do Cliente ou Empresa</Label>
                     <Input
                       id="clientName"
+                      className="h-8 md:h-10 text-sm"
                       value={formData.clientName}
                       onChange={(e) => setFormData(prev => ({ ...prev, clientName: e.target.value }))}
                       required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="deliveryCity">Cidade/Estado de Entrega</Label>
+                    <Label htmlFor="deliveryCity" className="text-xs md:text-sm">Cidade/Estado de Entrega</Label>
                     <Input
                       id="deliveryCity"
+                      className="h-8 md:h-10 text-sm"
                       value={formData.deliveryCity}
                       onChange={(e) => setFormData(prev => ({ ...prev, deliveryCity: e.target.value }))}
                       required
                     />
                   </div>
                                 <div className="md:col-span-1">
-                    <Label htmlFor="orderDate">Data do Pedido</Label>
+                    <Label htmlFor="orderDate" className="text-xs md:text-sm">Data do Pedido</Label>
                     <Input
                       id="orderDate"
+                      className="h-8 md:h-10 text-sm"
                       type="date"
                       value={formData.orderDate}
                       onChange={(e) => setFormData(prev => ({ ...prev, orderDate: e.target.value }))}
@@ -445,9 +449,10 @@ const InvoiceGenerator: React.FC = () => {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <Label htmlFor="paymentDate">Data de Pagamento</Label>
+                    <Label htmlFor="paymentDate" className="text-xs md:text-sm">Data de Pagamento</Label>
                     <Input
                       id="paymentDate"
+                      className="h-8 md:h-10 text-sm"
                       type="date"
                       value={formData.paymentDate}
                       onChange={(e) => setFormData(prev => ({ ...prev, paymentDate: e.target.value }))}
@@ -466,19 +471,20 @@ const InvoiceGenerator: React.FC = () => {
                       onClick={addManualItem} 
                       variant="outline" 
                       size="sm"
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-1 text-xs md:text-sm h-7 md:h-8 px-2 md:px-3"
                     >
-                      <Plus className="h-4 w-4" />
-                      Adicionar Item Manual
+                      <Plus className="h-3 w-3 md:h-4 md:w-4" />
+                      <span className="hidden sm:inline">Adicionar Item Manual</span>
+                      <span className="sm:hidden">+ Item</span>
                     </Button>
                   </div>
                   
                   {/* Manual Items - moved to top */}
                   {manualItems.length > 0 && (
-                    <div className="space-y-3 p-4 bg-muted/30 rounded-lg border-2 border-dashed">
-                      <h4 className="text-md font-semibold text-primary">Itens Manuais</h4>
+                    <div className="space-y-2 md:space-y-3 p-2 md:p-4 bg-muted/30 rounded-lg border-2 border-dashed">
+                      <h4 className="text-xs md:text-md font-semibold text-primary">Itens Manuais</h4>
                       {manualItems.map((item) => (
-                        <div key={item.id} className="grid grid-cols-1 md:grid-cols-5 gap-2 items-end p-3 border rounded-lg bg-background">
+                        <div key={item.id} className="grid grid-cols-1 md:grid-cols-5 gap-1 md:gap-2 items-end p-2 md:p-3 border rounded-lg bg-background">
                           <div>
                             <Label htmlFor={`manual-product-${item.id}`} className="text-xs text-muted-foreground">
                               Nome do Produto
@@ -530,9 +536,9 @@ const InvoiceGenerator: React.FC = () => {
                               onClick={() => removeManualItem(item.id)}
                               variant="ghost"
                               size="sm"
-                              className="text-destructive hover:text-destructive"
+                              className="text-destructive hover:text-destructive h-6 w-6 md:h-8 md:w-8"
                             >
-                              <X className="h-4 w-4" />
+                              <X className="h-3 w-3 md:h-4 md:w-4" />
                             </Button>
                           </div>
                         </div>
@@ -540,30 +546,31 @@ const InvoiceGenerator: React.FC = () => {
                     </div>
                   )}
                   
-                  <div className="space-y-6 max-h-96 overflow-y-auto">
+                  <div className="space-y-3 md:space-y-6 max-h-80 md:max-h-96 overflow-y-auto">
                     {productCategories.map((category, categoryIndex) => (
-                      <div key={categoryIndex} className="space-y-3">
-                        <h4 className={`text-md font-semibold border-b pb-2 ${getCategoryHeaderColor(category.name)}`}>
+                      <div key={categoryIndex} className="space-y-2 md:space-y-3">
+                        <h4 className={`text-xs md:text-md font-semibold border-b pb-1 md:pb-2 ${getCategoryHeaderColor(category.name)}`}>
                           {category.name}
                         </h4>
-                        <div className="space-y-3">
+                        <div className="space-y-1 md:space-y-3">
                           {category.products.map((product, index) => {
                             const globalIndex = `${categoryIndex}-${index}`;
                             const iconConfig = getProductIcon(product.name, category.name);
                             const IconComponent = iconConfig.icon;
                             return (
-                              <div key={globalIndex} className="grid grid-cols-1 md:grid-cols-6 gap-2 items-end p-3 border rounded-lg">
-                                <div className="md:col-span-3 flex items-center gap-3">
-                                  <div className={`w-8 h-8 rounded-lg ${iconConfig.bgColor} flex items-center justify-center`}>
-                                    <IconComponent className={`w-5 h-5 ${iconConfig.color}`} />
+                              <div key={globalIndex} className="grid grid-cols-1 md:grid-cols-6 gap-1 md:gap-2 items-end p-2 md:p-3 border rounded-lg">
+                                <div className="md:col-span-3 flex items-center gap-2 md:gap-3">
+                                  <div className={`w-6 h-6 md:w-8 md:h-8 rounded-lg ${iconConfig.bgColor} flex items-center justify-center`}>
+                                    <IconComponent className={`w-3 h-3 md:w-5 md:h-5 ${iconConfig.color}`} />
                                   </div>
-                                  <Label className="text-sm">{product.name}</Label>
+                                  <Label className="text-xs md:text-sm">{product.name}</Label>
                                 </div>
                                 <div>
                                   <Label htmlFor={`qty-${globalIndex}`} className="text-xs text-muted-foreground">
                                     Quantidade
                                   </Label>
                                   <Input
+                                    className="h-7 md:h-10 text-xs md:text-sm"
                                     id={`qty-${globalIndex}`}
                                     type="number"
                                     min="0"
@@ -577,6 +584,7 @@ const InvoiceGenerator: React.FC = () => {
                                     Valor Unitário (USD)
                                   </Label>
                                   <Input
+                                    className="h-7 md:h-10 text-xs md:text-sm"
                                     id={`price-${globalIndex}`}
                                     type="number"
                                     min="0"
@@ -588,7 +596,7 @@ const InvoiceGenerator: React.FC = () => {
                                 </div>
                                 <div className="md:col-span-1 text-right">
                                   <Label className="text-xs text-muted-foreground">Total</Label>
-                                  <div className="font-semibold">
+                                  <div className="font-semibold text-xs md:text-sm">
                                     ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
                                   </div>
                                 </div>
@@ -666,20 +674,21 @@ const InvoiceGenerator: React.FC = () => {
                 <Separator />
 
                 {/* Total and Discount Section */}
-                <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
-                  <h3 className="text-lg font-semibold text-primary">Resumo do Pedido</h3>
+                <div className="space-y-3 md:space-y-4 p-3 md:p-4 bg-muted/30 rounded-lg">
+                  <h3 className="text-sm md:text-lg font-semibold text-primary">Resumo do Pedido</h3>
                   
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-lg">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex justify-between text-sm md:text-lg">
                       <span>Subtotal:</span>
                       <span className="font-semibold">${grandTotal.toFixed(2)}</span>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 items-end">
                       <div>
-                        <Label htmlFor="discount">Desconto (USD)</Label>
+                        <Label htmlFor="discount" className="text-xs md:text-sm">Desconto (USD)</Label>
                         <Input
                           id="discount"
+                          className="h-7 md:h-10 text-xs md:text-sm"
                           type="number"
                           min="0"
                           step="0.01"
@@ -689,7 +698,7 @@ const InvoiceGenerator: React.FC = () => {
                         />
                       </div>
                       <div className="text-right">
-                        <div className="text-2xl font-bold text-primary">
+                        <div className="text-lg md:text-2xl font-bold text-primary">
                           Total Final: ${finalTotal.toFixed(2)}
                         </div>
                       </div>
@@ -697,7 +706,7 @@ const InvoiceGenerator: React.FC = () => {
                   </div>
                 </div>
 
-                <Button type="submit" variant="gradient" size="lg" className="w-full">
+                <Button type="submit" variant="gradient" size="lg" className="w-full h-10 md:h-12 text-sm md:text-base">
                   Gerar Invoice
                 </Button>
               </form>
