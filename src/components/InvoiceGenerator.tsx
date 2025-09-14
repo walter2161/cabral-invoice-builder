@@ -546,7 +546,7 @@ const InvoiceGenerator: React.FC = () => {
                     </div>
                   )}
                   
-                  <div className="space-y-3 md:space-y-6 max-h-96 md:max-h-96 overflow-y-auto bg-muted/60 p-3 rounded-lg border">
+                  <div className="space-y-3 md:space-y-6 max-h-96 md:max-h-96 overflow-y-auto bg-slate-800 p-3 rounded-lg border">
                     {productCategories.map((category, categoryIndex) => (
                       <div key={categoryIndex} className="space-y-2 md:space-y-3">
                         <h4 className={`text-xs md:text-md font-semibold border-b pb-1 md:pb-2 ${getCategoryHeaderColor(category.name)}`}>
@@ -558,7 +558,7 @@ const InvoiceGenerator: React.FC = () => {
                             const iconConfig = getProductIcon(product.name, category.name);
                             const IconComponent = iconConfig.icon;
                             return (
-                              <div key={globalIndex} className="p-2 md:p-3 border rounded-lg space-y-2">
+                              <div key={globalIndex} className="p-2 md:p-3 bg-white border rounded-lg space-y-2 shadow-sm">
                                 {/* Nome do produto */}
                                 <div className="flex items-center gap-2 md:gap-3">
                                   <div className={`w-6 h-6 md:w-8 md:h-8 rounded-lg ${iconConfig.bgColor} flex items-center justify-center`}>
