@@ -405,7 +405,7 @@ const InvoiceGenerator: React.FC = () => {
             </CardHeader>
             <CardContent className="p-3 md:p-6">
               <form onSubmit={handleSubmit} className="space-y-3 md:space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
+                <div className="grid grid-cols-1 gap-2 md:gap-4">
                   <div>
                     <Label htmlFor="invoiceNumber" className="text-xs md:text-sm">Número do Invoice</Label>
                     <Input
@@ -447,17 +447,17 @@ const InvoiceGenerator: React.FC = () => {
                       onChange={(e) => setFormData(prev => ({ ...prev, orderDate: e.target.value }))}
                       required
                     />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label htmlFor="paymentDate" className="text-xs md:text-sm">Data de Pagamento</Label>
-                    <Input
-                      id="paymentDate"
-                      className="h-8 md:h-10 text-sm"
-                      type="date"
-                      value={formData.paymentDate}
-                      onChange={(e) => setFormData(prev => ({ ...prev, paymentDate: e.target.value }))}
-                      required
-                    />
+                    <div>
+                      <Label htmlFor="paymentDate" className="text-xs md:text-sm">Data de Pagamento</Label>
+                      <Input
+                        id="paymentDate"
+                        className="h-8 md:h-10 text-sm"
+                        type="date"
+                        value={formData.paymentDate}
+                        onChange={(e) => setFormData(prev => ({ ...prev, paymentDate: e.target.value }))}
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -683,17 +683,18 @@ const InvoiceGenerator: React.FC = () => {
                   <h3 className="text-sm md:text-lg font-semibold text-primary">Resumo do Pedido</h3>
                   
                   <div className="space-y-2 md:space-y-3">
-                    <div className="flex justify-between text-sm md:text-lg">
-                      <span>Subtotal:</span>
-                      <span className="font-semibold">${grandTotal.toFixed(2)}</span>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 items-end">
-                      <div>
-                        <Label htmlFor="discount" className="text-xs md:text-sm">Desconto (USD)</Label>
+                    {/* Subtotal, Desconto e Total na mesma linha no mobile */}
+                    <div className="grid grid-cols-3 md:grid-cols-1 gap-2 md:gap-4">
+                      <div className="text-center md:text-left">
+                        <Label className="text-xs md:text-sm text-muted-foreground">Subtotal</Label>
+                        <div className="font-semibold text-xs md:text-lg">${grandTotal.toFixed(2)}</div>
+                      </div>
+                      
+                      <div className="text-center md:text-left">
+                        <Label htmlFor="discount" className="text-xs md:text-sm">Desconto</Label>
                         <Input
                           id="discount"
-                          className="h-7 md:h-10 text-xs md:text-sm"
+                          className="h-6 md:h-10 text-xs md:text-sm text-center"
                           type="number"
                           min="0"
                           step="0.01"
@@ -702,9 +703,11 @@ const InvoiceGenerator: React.FC = () => {
                           placeholder="0.00"
                         />
                       </div>
-                      <div className="text-right">
-                        <div className="text-lg md:text-2xl font-bold text-primary">
-                          Total Final: ${finalTotal.toFixed(2)}
+                      
+                      <div className="text-center md:text-right">
+                        <Label className="text-xs md:text-sm text-muted-foreground">Total Final</Label>
+                        <div className="font-bold text-sm md:text-2xl text-primary">
+                          ${finalTotal.toFixed(2)}
                         </div>
                       </div>
                     </div>
