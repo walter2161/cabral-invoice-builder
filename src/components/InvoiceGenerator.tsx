@@ -34,6 +34,8 @@ interface InvoiceData {
   paymentDate: string;
   items: InvoiceItem[];
   grandTotal: number;
+  discount: number;
+  finalTotal: number;
 }
 
 interface ProductCategory {
@@ -192,8 +194,16 @@ const InvoiceGenerator: React.FC = () => {
     return prices;
   });
   
+  const [discount, setDiscount] = useState<number>(() => {
+    const saved = localStorage.getItem('invoiceDiscount');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return 0;
+  });
   const [manualItems, setManualItems] = useState<ManualItem[]>(() => {
     const saved = localStorage.getItem('invoiceManualItems');
+    if (saved) {
     if (saved) {
       return JSON.parse(saved);
     }
@@ -212,6 +222,10 @@ const InvoiceGenerator: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('invoiceProductPrices', JSON.stringify(productPrices));
   }, [productPrices]);
+
+  useEffect(() => {
+    localStorage.setItem('invoiceDiscount', JSON.stringify(discount));
+  }, [discount]);
 
   useEffect(() => {
     localStorage.setItem('invoiceManualItems', JSON.stringify(manualItems));
@@ -253,10 +267,14 @@ const InvoiceGenerator: React.FC = () => {
       }
     });
 
+    const finalTotal = grandTotal - discount;
+
     const invoice: InvoiceData = {
       ...formData,
       items,
-      grandTotal
+      grandTotal,
+      discount,
+      finalTotal
     };
 
     setInvoiceData(invoice);
@@ -616,6 +634,64 @@ const InvoiceGenerator: React.FC = () => {
                   </div>
                 </div>
 
+                <Separator />
+
+                {/* Total and Discount Section */}
+                <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
+                  <h3 className="text-lg font-semibold text-primary">Resumo do Pedido</h3>
+                  
+                  {(() => {
+                    let grandTotal = 0;
+                    
+                    // Calculate total from products
+                    products.forEach(product => {
+                      const quantity = productQuantities[product.name] || 0;
+                      const unitPrice = productPrices[product.name] || 0;
+                      if (quantity > 0 && unitPrice > 0) {
+                        grandTotal += quantity * unitPrice;
+                      }
+                    });
+                    
+                    // Add manual items total
+                    manualItems.forEach(item => {
+                      if (item.quantity > 0 && item.unitPrice > 0) {
+                        grandTotal += item.quantity * item.unitPrice;
+                      }
+                    });
+                    
+                    const finalTotal = grandTotal - discount;
+                    
+                    return (
+                      <div className="space-y-3">
+                        <div className="flex justify-between text-lg">
+                          <span>Subtotal:</span>
+                          <span className="font-semibold">${grandTotal.toFixed(2)}</span>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                          <div>
+                            <Label htmlFor="discount">Desconto (USD)</Label>
+                            <Input
+                              id="discount"
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={discount || ''}
+                              onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
+                              placeholder="0.00"
+                            />
+                          </div>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-primary">
+                              Total Final: ${finalTotal.toFixed(2)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
                 <Button type="submit" variant="gradient" size="lg" className="w-full">
                   Gerar Invoice
                 </Button>
@@ -671,9 +747,19 @@ const InvoiceGenerator: React.FC = () => {
                       ))}
                     </tbody>
                     <tfoot>
-                      <tr className="bg-muted font-bold">
-                        <td colSpan={3} className="border border-border p-3 text-right">Total Geral</td>
+                      <tr className="bg-muted">
+                        <td colSpan={3} className="border border-border p-3 text-right font-semibold">Subtotal</td>
                         <td className="border border-border p-3 text-center">${invoiceData?.grandTotal.toFixed(2)}</td>
+                      </tr>
+                      {invoiceData?.discount && invoiceData.discount > 0 && (
+                        <tr className="bg-muted">
+                          <td colSpan={3} className="border border-border p-3 text-right font-semibold text-red-600">Desconto</td>
+                          <td className="border border-border p-3 text-center text-red-600">-${invoiceData.discount.toFixed(2)}</td>
+                        </tr>
+                      )}
+                      <tr className="bg-primary text-primary-foreground font-bold">
+                        <td colSpan={3} className="border border-border p-3 text-right text-lg">Total Final</td>
+                        <td className="border border-border p-3 text-center text-lg">${invoiceData?.finalTotal.toFixed(2)}</td>
                       </tr>
                     </tfoot>
                   </table>
