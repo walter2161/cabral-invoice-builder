@@ -301,6 +301,31 @@ const InvoiceGenerator: React.FC = () => {
     ));
   };
 
+  const generateProductImageUrl = (productName: string) => {
+    // Create a clean prompt for the product image
+    const prompt = productName
+      .toLowerCase()
+      .replace(/\b(caixas de açaí|cxs)\b/g, 'acai bowl frozen')
+      .replace(/\b(sazon|tempero)\b/g, 'seasoning spice')
+      .replace(/\b(feijão|feijao)\b/g, 'beans')
+      .replace(/\b(farofa)\b/g, 'cassava flour')
+      .replace(/\b(bananada)\b/g, 'banana candy')
+      .replace(/\b(molho)\b/g, 'sauce')
+      .replace(/\b(suco)\b/g, 'juice')
+      .replace(/\b(sal)\b/g, 'salt')
+      .replace(/\b(açúcar|acucar)\b/g, 'sugar')
+      .replace(/\b(café|cafe)\b/g, 'coffee')
+      .replace(/\b(arroz)\b/g, 'rice')
+      .replace(/\b(nescau|toddy)\b/g, 'chocolate powder')
+      .replace(/\b(mate)\b/g, 'mate tea')
+      .replace(/\b(guaraviton)\b/g, 'energy drink')
+      .replace(/[^\w\s]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ' product commercial photography white background')}&width=60&height=60&seed=${productName.length}`;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -402,7 +427,13 @@ const InvoiceGenerator: React.FC = () => {
                             const globalIndex = `${categoryIndex}-${index}`;
                             return (
                               <div key={globalIndex} className="grid grid-cols-1 md:grid-cols-4 gap-2 items-end p-3 border rounded-lg">
-                                <div>
+                                <div className="flex items-center gap-3">
+                                  <img 
+                                    src={generateProductImageUrl(product.name)} 
+                                    alt={product.name}
+                                    className="w-[60px] h-[60px] object-cover rounded-lg border bg-muted"
+                                    loading="lazy"
+                                  />
                                   <Label className="text-sm">{product.name}</Label>
                                 </div>
                                 <div>
