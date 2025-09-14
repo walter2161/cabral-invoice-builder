@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Plus, X, Coffee, Droplets, Wheat, Candy, Wine, Zap, Soup, Cookie, Beef } from 'lucide-react';
 import logoImage from '@/assets/logo-don-cabral.png';
+import logoPrint from '@/assets/logo-don-cabral-pb.png';
 
 interface Product {
   name: string;
@@ -708,8 +709,8 @@ const InvoiceGenerator: React.FC = () => {
               <CardContent className="p-8">
                 {/* Invoice Header */}
                 <div className="text-center mb-8">
-                  <div className="bg-black print:bg-black p-6 rounded-xl mb-4 inline-block shadow-lg print:shadow-none">
-                    <img src={logoImage} alt="Don Cabral Logo" className="h-[60px] w-auto" />
+                  <div className="mb-4 inline-block">
+                    <img src={logoPrint} alt="Logotipo Don Cabral preto e amarelo" className="h-[60px] w-auto" />
                   </div>
                   <h1 className="text-3xl font-bold text-primary mb-2">
                     INVOICE #{invoiceData?.invoiceNumber}
