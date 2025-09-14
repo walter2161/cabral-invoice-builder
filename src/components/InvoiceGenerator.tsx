@@ -266,12 +266,13 @@ const InvoiceGenerator: React.FC = () => {
       }
     });
 
-    const finalTotal = grandTotal - discount;
+    const currentGrandTotal = calculateGrandTotal();
+    const finalTotal = currentGrandTotal - discount;
 
     const invoice: InvoiceData = {
       ...formData,
       items,
-      grandTotal,
+      grandTotal: currentGrandTotal,
       discount,
       finalTotal
     };
@@ -352,6 +353,32 @@ const InvoiceGenerator: React.FC = () => {
 
     return categoryColors[categoryName] || "text-gray-600 border-gray-200";
   };
+
+  // Calculate dynamic totals
+  const calculateGrandTotal = () => {
+    let grandTotal = 0;
+    
+    // Calculate total from products
+    products.forEach(product => {
+      const quantity = productQuantities[product.name] || 0;
+      const unitPrice = productPrices[product.name] || 0;
+      if (quantity > 0 && unitPrice > 0) {
+        grandTotal += quantity * unitPrice;
+      }
+    });
+    
+    // Add manual items total
+    manualItems.forEach(item => {
+      if (item.quantity > 0 && item.unitPrice > 0) {
+        grandTotal += item.quantity * item.unitPrice;
+      }
+    });
+    
+    return grandTotal;
+  };
+
+  const grandTotal = calculateGrandTotal();
+  const finalTotal = grandTotal - discount;
 
   return (
     <div className="min-h-screen bg-background">
@@ -639,56 +666,32 @@ const InvoiceGenerator: React.FC = () => {
                 <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
                   <h3 className="text-lg font-semibold text-primary">Resumo do Pedido</h3>
                   
-                  {(() => {
-                    let grandTotal = 0;
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-lg">
+                      <span>Subtotal:</span>
+                      <span className="font-semibold">${grandTotal.toFixed(2)}</span>
+                    </div>
                     
-                    // Calculate total from products
-                    products.forEach(product => {
-                      const quantity = productQuantities[product.name] || 0;
-                      const unitPrice = productPrices[product.name] || 0;
-                      if (quantity > 0 && unitPrice > 0) {
-                        grandTotal += quantity * unitPrice;
-                      }
-                    });
-                    
-                    // Add manual items total
-                    manualItems.forEach(item => {
-                      if (item.quantity > 0 && item.unitPrice > 0) {
-                        grandTotal += item.quantity * item.unitPrice;
-                      }
-                    });
-                    
-                    const finalTotal = grandTotal - discount;
-                    
-                    return (
-                      <div className="space-y-3">
-                        <div className="flex justify-between text-lg">
-                          <span>Subtotal:</span>
-                          <span className="font-semibold">${grandTotal.toFixed(2)}</span>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                          <div>
-                            <Label htmlFor="discount">Desconto (USD)</Label>
-                            <Input
-                              id="discount"
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={discount || ''}
-                              onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
-                              placeholder="0.00"
-                            />
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-primary">
-                              Total Final: ${finalTotal.toFixed(2)}
-                            </div>
-                          </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                      <div>
+                        <Label htmlFor="discount">Desconto (USD)</Label>
+                        <Input
+                          id="discount"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={discount || ''}
+                          onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
+                          placeholder="0.00"
+                        />
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-primary">
+                          Total Final: ${finalTotal.toFixed(2)}
                         </div>
                       </div>
-                    );
-                  })()}
+                    </div>
+                  </div>
                 </div>
 
                 <Button type="submit" variant="gradient" size="lg" className="w-full">
