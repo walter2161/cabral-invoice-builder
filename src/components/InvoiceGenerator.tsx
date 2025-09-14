@@ -383,14 +383,16 @@ const InvoiceGenerator: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-gradient-header text-primary-foreground py-8 mb-8">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center mb-4">
-            <img src={logoImage} alt="Don Cabral Logo" className="h-20 w-auto" />
+      {!showInvoice && (
+        <div className="bg-gradient-header text-primary-foreground py-8 mb-8">
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <div className="flex items-center justify-center mb-4">
+              <img src={logoImage} alt="Don Cabral Logo" className="h-20 w-auto" />
+            </div>
+            <p className="text-lg opacity-90">Invoice Generator</p>
           </div>
-          <p className="text-lg opacity-90">Invoice Generator</p>
         </div>
-      </div>
+      )}
 
       <div className="max-w-4xl mx-auto px-4 pb-12">
         {!showInvoice ? (
