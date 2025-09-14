@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Coffee, Droplets, Wheat, Candy, Wine, Zap, Soup, Cookie, Beef } from 'lucide-react';
 import logoImage from '@/assets/logo-don-cabral.png';
 
 interface Product {
@@ -301,29 +301,24 @@ const InvoiceGenerator: React.FC = () => {
     ));
   };
 
-  const generateProductImageUrl = (productName: string) => {
-    // Create a clean prompt for the product image
-    const prompt = productName
-      .toLowerCase()
-      .replace(/\b(caixas de açaí|cxs)\b/g, 'acai bowl frozen')
-      .replace(/\b(sazon|tempero)\b/g, 'seasoning spice')
-      .replace(/\b(feijão|feijao)\b/g, 'beans')
-      .replace(/\b(farofa)\b/g, 'cassava flour')
-      .replace(/\b(bananada)\b/g, 'banana candy')
-      .replace(/\b(molho)\b/g, 'sauce')
-      .replace(/\b(suco)\b/g, 'juice')
-      .replace(/\b(sal)\b/g, 'salt')
-      .replace(/\b(açúcar|acucar)\b/g, 'sugar')
-      .replace(/\b(café|cafe)\b/g, 'coffee')
-      .replace(/\b(arroz)\b/g, 'rice')
-      .replace(/\b(nescau|toddy)\b/g, 'chocolate powder')
-      .replace(/\b(mate)\b/g, 'mate tea')
-      .replace(/\b(guaraviton)\b/g, 'energy drink')
-      .replace(/[^\w\s]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-    
-    return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ' product commercial photography white background')}&width=60&height=60&seed=${productName.length}`;
+  const getProductIcon = (productName: string, categoryName: string) => {
+    // Map categories to icons
+    const categoryIcons: { [key: string]: any } = {
+      "Caixas de Açaí": Droplets,
+      "Temperos e Condimentos": Zap,
+      "Bebidas e Achocolatados": Coffee,
+      "Sucos": Wine,
+      "Cereais e Grãos": Wheat,
+      "Farofas e Açúcar": Candy,
+      "Doces e Bananadas": Candy,
+      "Molhos": Soup,
+      "Salgadinhos": Cookie,
+      "Café": Coffee
+    };
+
+    // Get icon from category
+    const IconComponent = categoryIcons[categoryName] || Beef;
+    return IconComponent;
   };
 
   return (
@@ -377,7 +372,7 @@ const InvoiceGenerator: React.FC = () => {
                       required
                     />
                   </div>
-                  <div>
+                                <div className="md:col-span-1">
                     <Label htmlFor="orderDate">Data do Pedido</Label>
                     <Input
                       id="orderDate"
@@ -401,7 +396,7 @@ const InvoiceGenerator: React.FC = () => {
 
                 <Separator />
 
-                <div>
+                                <div className="md:col-span-1">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-primary">Produtos</h3>
                     <Button 
@@ -425,15 +420,13 @@ const InvoiceGenerator: React.FC = () => {
                         <div className="space-y-3">
                           {category.products.map((product, index) => {
                             const globalIndex = `${categoryIndex}-${index}`;
+                            const IconComponent = getProductIcon(product.name, category.name);
                             return (
-                              <div key={globalIndex} className="grid grid-cols-1 md:grid-cols-4 gap-2 items-end p-3 border rounded-lg">
-                                <div className="flex items-center gap-3">
-                                  <img 
-                                    src={generateProductImageUrl(product.name)} 
-                                    alt={product.name}
-                                    className="w-[60px] h-[60px] object-cover rounded-lg border bg-muted"
-                                    loading="lazy"
-                                  />
+                              <div key={globalIndex} className="grid grid-cols-1 md:grid-cols-6 gap-2 items-end p-3 border rounded-lg">
+                                <div className="md:col-span-3 flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <IconComponent className="w-5 h-5 text-primary" />
+                                  </div>
                                   <Label className="text-sm">{product.name}</Label>
                                 </div>
                                 <div>
@@ -463,7 +456,7 @@ const InvoiceGenerator: React.FC = () => {
                                     placeholder="0.00"
                                   />
                                 </div>
-                                <div className="text-right">
+                                <div className="md:col-span-1 text-right">
                                   <Label className="text-xs text-muted-foreground">Total</Label>
                                   <div className="font-semibold">
                                     ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
