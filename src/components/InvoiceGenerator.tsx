@@ -5,8 +5,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Plus, X, Coffee, Droplets, Wheat, Candy, Wine, Zap, Soup, Cookie, Beef } from 'lucide-react';
-import logoImage from '@/assets/logo-don-cabral.png';
-import logoPrint from '@/assets/logo-don-cabral-pb.png';
+import logoImage from '@/assets/logo-front-line-white.png';
+import logoPrint from '@/assets/logo-front-line-black.png';
 
 interface Product {
   name: string;
@@ -388,7 +388,7 @@ const InvoiceGenerator: React.FC = () => {
         <div className="bg-gradient-header text-primary-foreground py-4 md:py-8 mb-4 md:mb-8">
           <div className="max-w-4xl mx-auto px-2 md:px-4 text-center">
             <div className="flex items-center justify-center mb-2 md:mb-4">
-              <img src={logoImage} alt="Don Cabral Logo" className="h-12 md:h-20 w-auto" />
+              <img src={logoImage} alt="Front Line Logo" className="h-12 md:h-20 w-auto" />
             </div>
             <p className="text-sm md:text-lg opacity-90">Invoice Generator</p>
           </div>
@@ -734,16 +734,16 @@ const InvoiceGenerator: React.FC = () => {
                 {/* Invoice Header */}
                 <div className="text-center mb-8">
                   <div className="mb-4 inline-block">
-                    <img src={logoPrint} alt="Logotipo Don Cabral preto e amarelo" className="h-[60px] w-auto" />
-                  </div>
-                  <h1 className="text-3xl font-bold text-primary mb-2">
-                    INVOICE #{invoiceData?.invoiceNumber}
-                  </h1>
-                  <div className="space-y-1 text-sm">
-                    <p><strong>Empresa:</strong> Don Cabral</p>
-                    <p><strong>Endereço:</strong> 180 East Mount Pleasant Ave, Livingston, NJ 07039</p>
-                    <p><strong>Instagram:</strong> @doncabral</p>
-                    <p><strong>Website:</strong> doncabral.com</p>
+                     <img src={logoPrint} alt="Logotipo Front Line Distribution" className="h-[60px] w-auto" />
+                   </div>
+                   <h1 className="text-3xl font-bold text-primary mb-2">
+                     INVOICE #{invoiceData?.invoiceNumber}
+                   </h1>
+                   <div className="space-y-1 text-sm">
+                     <p><strong>Empresa:</strong> Front Line Distribution</p>
+                     <p><strong>Endereço:</strong> 180 East Mount Pleasant Ave, Livingston, NJ 07039</p>
+                     <p><strong>Instagram:</strong> @frontlinedistribution</p>
+                     <p><strong>Website:</strong> frontlinedistribution.com</p>
                   </div>
                 </div>
 
@@ -807,7 +807,7 @@ const InvoiceGenerator: React.FC = () => {
                   </div>
                   <div className="text-center w-2/5">
                     <div className="border-t border-foreground pt-2">
-                      <p className="font-medium">Don Cabral</p>
+                      <p className="font-medium">Front Line Distribution</p>
                       <p className="text-sm text-muted-foreground">Assinatura da Empresa</p>
                     </div>
                   </div>
