@@ -401,8 +401,8 @@ const InvoiceGenerator: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      {!showInvoice && (
+      {/* Header only on step 1 */}
+      {!showInvoice && currentStep === 1 && (
         <div className="bg-gradient-header text-primary-foreground py-4 md:py-6 mb-4 md:mb-6">
           <div className="max-w-4xl mx-auto px-2 md:px-4 text-center">
             <div className="flex items-center justify-center">
@@ -417,42 +417,41 @@ const InvoiceGenerator: React.FC = () => {
           <Card className="shadow-invoice">
             <CardHeader className="pb-3 md:pb-6">
               {/* Step Progress */}
-              <div className="mb-6">
+              <div className="mb-4">
                 <div className="flex justify-between items-center">
                   {steps.map((step, index) => {
                     const StepIcon = step.icon;
                     return (
-                      <div key={step.number} className="flex flex-col items-center flex-1">
-                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-2 ${
+                      <div key={step.number} className="flex items-center gap-2 flex-1">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                           currentStep >= step.number 
                             ? 'bg-primary text-primary-foreground' 
                             : 'bg-muted text-muted-foreground'
                         }`}>
-                          <StepIcon className="w-5 h-5 md:w-6 md:h-6" />
+                          <StepIcon className="w-3 h-3" />
                         </div>
-                        <span className={`text-xs md:text-sm font-medium text-center ${
+                        <span className={`text-xs font-medium ${
                           currentStep >= step.number ? 'text-primary' : 'text-muted-foreground'
                         }`}>
                           {step.title}
                         </span>
-                        {index < steps.length - 1 && (
-                          <div className={`absolute top-5 md:top-6 w-full h-0.5 -z-10 ${
-                            currentStep > step.number ? 'bg-primary' : 'bg-muted'
-                          }`} style={{ 
-                            left: '50%', 
-                            width: `${100 / steps.length}%`,
-                            transform: 'translateX(-50%)'
-                          }} />
-                        )}
                       </div>
                     );
                   })}
                 </div>
+                <div className="w-full bg-muted rounded-full h-1 mt-3">
+                  <div 
+                    className="bg-primary h-1 rounded-full transition-all duration-300"
+                    style={{ width: `${(currentStep / 3) * 100}%` }}
+                  />
+                </div>
               </div>
               
-              <CardTitle className="text-lg md:text-xl text-center text-primary mb-6">
-                {steps[currentStep - 1].title}
-              </CardTitle>
+              {currentStep !== 2 && (
+                <CardTitle className="text-lg md:text-xl text-center text-primary mb-6">
+                  {steps[currentStep - 1].title}
+                </CardTitle>
+              )}
             </CardHeader>
             <CardContent className="p-3 md:p-6">
               <form onSubmit={handleSubmit} className="space-y-3 md:space-y-6">
