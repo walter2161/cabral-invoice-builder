@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Plus, X, Coffee, Droplets, Wheat, Candy, Wine, Zap, Soup, Cookie, Beef } from 'lucide-react';
+import { Plus, X, Coffee, Droplets, Wheat, Candy, Wine, Zap, Soup, Cookie, Beef, ChevronLeft, ChevronRight, User, Package, FileText } from 'lucide-react';
 import logoImage from '@/assets/logo-front-line-white.png';
 import logoPrint from '@/assets/logo-front-line-black.png';
 
@@ -159,6 +159,7 @@ const products: Product[] = productCategories.flatMap(category => category.produ
 const InvoiceGenerator: React.FC = () => {
   const [showInvoice, setShowInvoice] = useState(false);
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
+  const [currentStep, setCurrentStep] = useState(1);
   
   // Load data from localStorage or use defaults
   const [formData, setFormData] = useState(() => {
@@ -381,16 +382,32 @@ const InvoiceGenerator: React.FC = () => {
   const grandTotal = calculateGrandTotal();
   const finalTotal = grandTotal - discount;
 
+  const isStep1Valid = formData.invoiceNumber && formData.clientName && formData.deliveryCity && formData.orderDate && formData.paymentDate;
+  const isStep2Valid = Object.values(productQuantities).some(qty => qty > 0) || manualItems.some(item => item.quantity > 0 && item.unitPrice > 0);
+
+  const nextStep = () => {
+    if (currentStep < 3) setCurrentStep(currentStep + 1);
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) setCurrentStep(currentStep - 1);
+  };
+
+  const steps = [
+    { number: 1, title: "Dados Cadastrais", icon: User },
+    { number: 2, title: "Escolha dos Produtos", icon: Package },
+    { number: 3, title: "Resumo do Pedido", icon: FileText }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       {!showInvoice && (
-        <div className="bg-gradient-header text-primary-foreground py-4 md:py-8 mb-4 md:mb-8">
+        <div className="bg-gradient-header text-primary-foreground py-4 md:py-6 mb-4 md:mb-6">
           <div className="max-w-4xl mx-auto px-2 md:px-4 text-center">
-            <div className="flex items-center justify-center mb-2 md:mb-4">
-              <img src={logoImage} alt="Front Line Logo" className="h-12 md:h-20 w-auto" />
+            <div className="flex items-center justify-center">
+              <img src={logoImage} alt="Front Line Logo" className="h-10 md:h-16 w-auto" />
             </div>
-            <p className="text-sm md:text-lg opacity-90">Invoice Generator</p>
           </div>
         </div>
       )}
@@ -399,331 +416,376 @@ const InvoiceGenerator: React.FC = () => {
         {!showInvoice ? (
           <Card className="shadow-invoice">
             <CardHeader className="pb-3 md:pb-6">
-              <CardTitle className="text-lg md:text-2xl text-center text-primary">
-                Gerar Nova Invoice
+              {/* Step Progress */}
+              <div className="mb-6">
+                <div className="flex justify-between items-center">
+                  {steps.map((step, index) => {
+                    const StepIcon = step.icon;
+                    return (
+                      <div key={step.number} className="flex flex-col items-center flex-1">
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-2 ${
+                          currentStep >= step.number 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'bg-muted text-muted-foreground'
+                        }`}>
+                          <StepIcon className="w-5 h-5 md:w-6 md:h-6" />
+                        </div>
+                        <span className={`text-xs md:text-sm font-medium text-center ${
+                          currentStep >= step.number ? 'text-primary' : 'text-muted-foreground'
+                        }`}>
+                          {step.title}
+                        </span>
+                        {index < steps.length - 1 && (
+                          <div className={`absolute top-5 md:top-6 w-full h-0.5 -z-10 ${
+                            currentStep > step.number ? 'bg-primary' : 'bg-muted'
+                          }`} style={{ 
+                            left: '50%', 
+                            width: `${100 / steps.length}%`,
+                            transform: 'translateX(-50%)'
+                          }} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              <CardTitle className="text-lg md:text-xl text-center text-primary mb-6">
+                {steps[currentStep - 1].title}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-3 md:p-6">
               <form onSubmit={handleSubmit} className="space-y-3 md:space-y-6">
-                <div className="space-y-3">
-                  {/* Invoice, Nome e Cidade na mesma linha */}
-                  <div className="grid grid-cols-3 gap-2">
-                    <div>
-                      <Label htmlFor="invoiceNumber" className="text-xs md:text-sm">Número Invoice</Label>
-                      <Input
-                        id="invoiceNumber"
-                        className="h-8 md:h-10 text-sm"
-                        value={formData.invoiceNumber}
-                        onChange={(e) => setFormData(prev => ({ ...prev, invoiceNumber: e.target.value }))}
-                        placeholder="INV-001"
-                        required
-                      />
+                {/* Step 1: Dados Cadastrais */}
+                {currentStep === 1 && (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="invoiceNumber" className="text-sm font-medium">Número Invoice</Label>
+                        <Input
+                          id="invoiceNumber"
+                          className="h-10 text-sm mt-1"
+                          value={formData.invoiceNumber}
+                          onChange={(e) => setFormData(prev => ({ ...prev, invoiceNumber: e.target.value }))}
+                          placeholder="INV-001"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="clientName" className="text-sm font-medium">Nome do Cliente</Label>
+                        <Input
+                          id="clientName"
+                          className="h-10 text-sm mt-1"
+                          value={formData.clientName}
+                          onChange={(e) => setFormData(prev => ({ ...prev, clientName: e.target.value }))}
+                          placeholder="Nome completo do cliente"
+                          required
+                        />
+                      </div>
                     </div>
+                    
                     <div>
-                      <Label htmlFor="clientName" className="text-xs md:text-sm">Nome do Cliente</Label>
-                      <Input
-                        id="clientName"
-                        className="h-8 md:h-10 text-sm"
-                        value={formData.clientName}
-                        onChange={(e) => setFormData(prev => ({ ...prev, clientName: e.target.value }))}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="deliveryCity" className="text-xs md:text-sm">Cidade/Estado</Label>
+                      <Label htmlFor="deliveryCity" className="text-sm font-medium">Cidade/Estado</Label>
                       <Input
                         id="deliveryCity"
-                        className="h-8 md:h-10 text-sm"
+                        className="h-10 text-sm mt-1"
                         value={formData.deliveryCity}
                         onChange={(e) => setFormData(prev => ({ ...prev, deliveryCity: e.target.value }))}
+                        placeholder="Ex: São Paulo - SP"
                         required
                       />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="orderDate" className="text-sm font-medium">Data do Pedido</Label>
+                        <Input
+                          id="orderDate"
+                          className="h-10 text-sm mt-1"
+                          type="date"
+                          value={formData.orderDate}
+                          onChange={(e) => setFormData(prev => ({ ...prev, orderDate: e.target.value }))}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="paymentDate" className="text-sm font-medium">Data de Pagamento</Label>
+                        <Input
+                          id="paymentDate"
+                          className="h-10 text-sm mt-1"
+                          type="date"
+                          value={formData.paymentDate}
+                          onChange={(e) => setFormData(prev => ({ ...prev, paymentDate: e.target.value }))}
+                          required
+                        />
+                      </div>
                     </div>
                   </div>
-                  
-                  {/* Datas na mesma linha */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <Label htmlFor="orderDate" className="text-xs md:text-sm">Data do Pedido</Label>
-                      <Input
-                        id="orderDate"
-                        className="h-8 md:h-10 text-sm"
-                        type="date"
-                        value={formData.orderDate}
-                        onChange={(e) => setFormData(prev => ({ ...prev, orderDate: e.target.value }))}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="paymentDate" className="text-xs md:text-sm">Data de Pagamento</Label>
-                      <Input
-                        id="paymentDate"
-                        className="h-8 md:h-10 text-sm"
-                        type="date"
-                        value={formData.paymentDate}
-                        onChange={(e) => setFormData(prev => ({ ...prev, paymentDate: e.target.value }))}
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
+                )}
 
-                <Separator />
-
-                                <div className="md:col-span-1">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-primary">Produtos</h3>
-                    <Button 
-                      type="button" 
-                      onClick={addManualItem} 
-                      variant="outline" 
-                      size="sm"
-                      className="flex items-center gap-1 text-xs md:text-sm h-7 md:h-8 px-2 md:px-3"
-                    >
-                      <Plus className="h-3 w-3 md:h-4 md:w-4" />
-                      <span className="hidden sm:inline">Adicionar Item Manual</span>
-                      <span className="sm:hidden">+ Item</span>
-                    </Button>
-                  </div>
-                  
-                  {/* Manual Items - moved to top */}
-                  {manualItems.length > 0 && (
-                    <div className="space-y-2 md:space-y-3 p-2 md:p-4 bg-muted/30 rounded-lg border-2 border-dashed">
-                      <h4 className="text-xs md:text-md font-semibold text-primary">Itens Manuais</h4>
-                      {manualItems.map((item) => (
-                        <div key={item.id} className="grid grid-cols-1 md:grid-cols-5 gap-1 md:gap-2 items-end p-2 md:p-3 border rounded-lg bg-background">
-                          <div>
-                            <Label htmlFor={`manual-product-${item.id}`} className="text-xs text-muted-foreground">
-                              Nome do Produto
-                            </Label>
-                            <Input
-                              id={`manual-product-${item.id}`}
-                              type="text"
-                              value={item.product}
-                              onChange={(e) => updateManualItem(item.id, 'product', e.target.value)}
-                              placeholder="Nome do produto"
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor={`manual-qty-${item.id}`} className="text-xs text-muted-foreground">
-                              Quantidade
-                            </Label>
-                            <Input
-                              id={`manual-qty-${item.id}`}
-                              type="number"
-                              min="0"
-                              value={item.quantity || ''}
-                              onChange={(e) => updateManualItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
-                              placeholder="0"
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor={`manual-price-${item.id}`} className="text-xs text-muted-foreground">
-                              Valor Unitário (USD)
-                            </Label>
-                            <Input
-                              id={`manual-price-${item.id}`}
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={item.unitPrice || ''}
-                              onChange={(e) => updateManualItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
-                              placeholder="0.00"
-                            />
-                          </div>
-                          <div className="text-right">
-                            <Label className="text-xs text-muted-foreground">Total</Label>
-                            <div className="font-semibold">
-                              ${(item.quantity * item.unitPrice).toFixed(2)}
+                {/* Step 2: Escolha dos Produtos */}
+                {currentStep === 2 && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-primary">Produtos</h3>
+                      <Button 
+                        type="button" 
+                        onClick={addManualItem} 
+                        variant="outline" 
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Adicionar Item Manual
+                      </Button>
+                    </div>
+                    
+                    {/* Manual Items */}
+                    {manualItems.length > 0 && (
+                      <div className="space-y-3 p-4 bg-muted/30 rounded-lg border-2 border-dashed">
+                        <h4 className="text-md font-semibold text-primary">Itens Manuais</h4>
+                        {manualItems.map((item) => (
+                          <div key={item.id} className="grid grid-cols-1 md:grid-cols-5 gap-2 items-end p-3 border rounded-lg bg-background">
+                            <div>
+                              <Label htmlFor={`manual-product-${item.id}`} className="text-sm text-muted-foreground">
+                                Nome do Produto
+                              </Label>
+                              <Input
+                                id={`manual-product-${item.id}`}
+                                type="text"
+                                value={item.product}
+                                onChange={(e) => updateManualItem(item.id, 'product', e.target.value)}
+                                placeholder="Nome do produto"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`manual-qty-${item.id}`} className="text-sm text-muted-foreground">
+                                Quantidade
+                              </Label>
+                              <Input
+                                id={`manual-qty-${item.id}`}
+                                type="number"
+                                min="0"
+                                value={item.quantity || ''}
+                                onChange={(e) => updateManualItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
+                                placeholder="0"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`manual-price-${item.id}`} className="text-sm text-muted-foreground">
+                                Valor Unitário (USD)
+                              </Label>
+                              <Input
+                                id={`manual-price-${item.id}`}
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={item.unitPrice || ''}
+                                onChange={(e) => updateManualItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                                placeholder="0.00"
+                              />
+                            </div>
+                            <div className="text-right">
+                              <Label className="text-sm text-muted-foreground">Total</Label>
+                              <div className="font-semibold">
+                                ${(item.quantity * item.unitPrice).toFixed(2)}
+                              </div>
+                            </div>
+                            <div className="flex justify-center">
+                              <Button
+                                type="button"
+                                onClick={() => removeManualItem(item.id)}
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
-                          <div className="flex justify-center">
-                            <Button
-                              type="button"
-                              onClick={() => removeManualItem(item.id)}
-                              variant="ghost"
-                              size="sm"
-                              className="text-destructive hover:text-destructive h-6 w-6 md:h-8 md:w-8"
-                            >
-                              <X className="h-3 w-3 md:h-4 md:w-4" />
-                            </Button>
+                        ))}
+                      </div>
+                    )}
+                    
+                    <div className="space-y-6 max-h-[60vh] overflow-y-auto bg-slate-50 p-4 rounded-lg border">
+                      {productCategories.map((category, categoryIndex) => (
+                        <div key={categoryIndex} className="space-y-3">
+                          <h4 className={`text-md font-semibold border-b pb-2 ${getCategoryHeaderColor(category.name)}`}>
+                            {category.name}
+                          </h4>
+                          <div className="space-y-3">
+                            {category.products.map((product, index) => {
+                              const globalIndex = `${categoryIndex}-${index}`;
+                              const iconConfig = getProductIcon(product.name, category.name);
+                              const IconComponent = iconConfig.icon;
+                              return (
+                                <div key={globalIndex} className="p-3 bg-white border rounded-lg space-y-2 shadow-sm">
+                                  <div className="flex items-center gap-3">
+                                    <div className={`w-8 h-8 rounded-lg ${iconConfig.bgColor} flex items-center justify-center`}>
+                                      <IconComponent className={`w-5 h-5 ${iconConfig.color}`} />
+                                    </div>
+                                    <Label className="text-sm font-medium">{product.name}</Label>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-3 gap-2">
+                                    <div>
+                                      <Label htmlFor={`qty-${globalIndex}`} className="text-xs text-muted-foreground">
+                                        Quantidade
+                                      </Label>
+                                      <Input
+                                        className="h-10 text-sm"
+                                        id={`qty-${globalIndex}`}
+                                        type="number"
+                                        min="0"
+                                        value={productQuantities[product.name] || ''}
+                                        onChange={(e) => updateQuantity(product.name, parseInt(e.target.value) || 0)}
+                                        placeholder="0"
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label htmlFor={`price-${globalIndex}`} className="text-xs text-muted-foreground">
+                                        Valor Unitário (USD)
+                                      </Label>
+                                      <Input
+                                        className="h-10 text-sm"
+                                        id={`price-${globalIndex}`}
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={productPrices[product.name] || ''}
+                                        onChange={(e) => updatePrice(product.name, parseFloat(e.target.value) || 0)}
+                                        placeholder="0.00"
+                                      />
+                                    </div>
+                                    <div className="text-right">
+                                      <Label className="text-xs text-muted-foreground">Total</Label>
+                                      <div className="font-semibold text-sm bg-muted p-2 rounded text-center">
+                                        ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       ))}
                     </div>
-                  )}
-                  
-                  <div className="space-y-3 md:space-y-6 max-h-[70vh] md:max-h-96 overflow-y-auto bg-slate-800 p-3 rounded-lg border">
-                    {productCategories.map((category, categoryIndex) => (
-                      <div key={categoryIndex} className="space-y-2 md:space-y-3">
-                        <h4 className={`text-xs md:text-md font-semibold border-b pb-1 md:pb-2 ${getCategoryHeaderColor(category.name)}`}>
-                          {category.name}
-                        </h4>
-                        <div className="space-y-1 md:space-y-3">
-                          {category.products.map((product, index) => {
-                            const globalIndex = `${categoryIndex}-${index}`;
-                            const iconConfig = getProductIcon(product.name, category.name);
-                            const IconComponent = iconConfig.icon;
-                            return (
-                              <div key={globalIndex} className="p-2 md:p-3 bg-white border rounded-lg space-y-2 shadow-sm">
-                                {/* Nome do produto */}
-                                <div className="flex items-center gap-2 md:gap-3">
-                                  <div className={`w-6 h-6 md:w-8 md:h-8 rounded-lg ${iconConfig.bgColor} flex items-center justify-center`}>
-                                    <IconComponent className={`w-3 h-3 md:w-5 md:h-5 ${iconConfig.color}`} />
-                                  </div>
-                                  <Label className="text-xs md:text-sm">{product.name}</Label>
+                  </div>
+                )}
+
+                {/* Step 3: Resumo do Pedido */}
+                {currentStep === 3 && (
+                  <div className="space-y-6">
+                    <div className="p-4 bg-muted/30 rounded-lg">
+                      <h3 className="text-lg font-semibold text-primary mb-4">Resumo do Pedido</h3>
+                      
+                      {/* Items Summary */}
+                      <div className="space-y-3 mb-6">
+                        <h4 className="font-medium">Itens Selecionados:</h4>
+                        <div className="space-y-2 max-h-40 overflow-y-auto">
+                          {products.map(product => {
+                            const quantity = productQuantities[product.name] || 0;
+                            const price = productPrices[product.name] || 0;
+                            if (quantity > 0 && price > 0) {
+                              return (
+                                <div key={product.name} className="flex justify-between items-center p-2 bg-background rounded border">
+                                  <span className="text-sm">{product.name}</span>
+                                  <span className="text-sm font-medium">{quantity}x ${price.toFixed(2)} = ${(quantity * price).toFixed(2)}</span>
                                 </div>
-                                
-                                {/* Campos de input - todos na mesma linha */}
-                                <div className="grid grid-cols-3 gap-2">
-                                  <div>
-                                    <Label htmlFor={`qty-${globalIndex}`} className="text-xs text-muted-foreground">
-                                      Qtd
-                                    </Label>
-                                    <Input
-                                      className="h-7 md:h-10 text-xs md:text-sm"
-                                      id={`qty-${globalIndex}`}
-                                      type="number"
-                                      min="0"
-                                      value={productQuantities[product.name] || ''}
-                                      onChange={(e) => updateQuantity(product.name, parseInt(e.target.value) || 0)}
-                                      placeholder="0"
-                                    />
-                                  </div>
-                                  <div>
-                                    <Label htmlFor={`price-${globalIndex}`} className="text-xs text-muted-foreground">
-                                      Valor
-                                    </Label>
-                                    <Input
-                                      className="h-7 md:h-10 text-xs md:text-sm"
-                                      id={`price-${globalIndex}`}
-                                      type="number"
-                                      min="0"
-                                      step="0.01"
-                                      value={productPrices[product.name] || ''}
-                                      onChange={(e) => updatePrice(product.name, parseFloat(e.target.value) || 0)}
-                                      placeholder="0.00"
-                                    />
-                                  </div>
-                                  <div className="text-right">
-                                    <Label className="text-xs text-muted-foreground">Total</Label>
-                                    <div className="font-semibold text-xs md:text-sm bg-muted p-1 rounded text-center">
-                                      ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
-                                    </div>
-                                  </div>
+                              );
+                            }
+                            return null;
+                          })}
+                          {manualItems.map(item => {
+                            if (item.quantity > 0 && item.unitPrice > 0) {
+                              return (
+                                <div key={item.id} className="flex justify-between items-center p-2 bg-background rounded border">
+                                  <span className="text-sm">{item.product}</span>
+                                  <span className="text-sm font-medium">{item.quantity}x ${item.unitPrice.toFixed(2)} = ${(item.quantity * item.unitPrice).toFixed(2)}</span>
                                 </div>
-                              </div>
-                            );
+                              );
+                            }
+                            return null;
                           })}
                         </div>
                       </div>
-                    ))}
-                    
-                    {/* Manual Items */}
-                    {manualItems.map((item) => (
-                      <div key={item.id} className="grid grid-cols-1 md:grid-cols-5 gap-2 items-end p-3 border rounded-lg bg-muted/30">
-                        <div>
-                          <Label htmlFor={`manual-product-${item.id}`} className="text-xs text-muted-foreground">
-                            Nome do Produto
-                          </Label>
-                          <Input
-                            id={`manual-product-${item.id}`}
-                            type="text"
-                            value={item.product}
-                            onChange={(e) => updateManualItem(item.id, 'product', e.target.value)}
-                            placeholder="Nome do produto"
-                          />
+                      
+                      {/* Totals */}
+                      <div className="space-y-3 border-t pt-4">
+                        <div className="flex justify-between">
+                          <span>Subtotal:</span>
+                          <span className="font-semibold">${grandTotal.toFixed(2)}</span>
                         </div>
-                        <div>
-                          <Label htmlFor={`manual-qty-${item.id}`} className="text-xs text-muted-foreground">
-                            Quantidade
-                          </Label>
+                        
+                        <div className="flex justify-between items-center">
+                          <Label htmlFor="discount" className="text-sm">Desconto (USD):</Label>
                           <Input
-                            id={`manual-qty-${item.id}`}
-                            type="number"
-                            min="0"
-                            value={item.quantity || ''}
-                            onChange={(e) => updateManualItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
-                            placeholder="0"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor={`manual-price-${item.id}`} className="text-xs text-muted-foreground">
-                            Valor Unitário (USD)
-                          </Label>
-                          <Input
-                            id={`manual-price-${item.id}`}
+                            id="discount"
+                            className="h-10 w-32 text-right"
                             type="number"
                             min="0"
                             step="0.01"
-                            value={item.unitPrice || ''}
-                            onChange={(e) => updateManualItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                            value={discount || ''}
+                            onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
                             placeholder="0.00"
                           />
                         </div>
-                        <div className="text-right">
-                          <Label className="text-xs text-muted-foreground">Total</Label>
-                          <div className="font-semibold">
-                            ${(item.quantity * item.unitPrice).toFixed(2)}
-                          </div>
-                        </div>
-                        <div className="flex justify-center">
-                          <Button
-                            type="button"
-                            onClick={() => removeManualItem(item.id)}
-                            variant="ghost"
-                            size="sm"
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Total and Discount Section */}
-                <div className="space-y-3 md:space-y-4 p-3 md:p-4 bg-muted/30 rounded-lg">
-                  <h3 className="text-sm md:text-lg font-semibold text-primary">Resumo do Pedido</h3>
-                  
-                  <div className="space-y-2 md:space-y-3">
-                    {/* Subtotal, Desconto e Total na mesma linha no mobile */}
-                    <div className="grid grid-cols-3 md:grid-cols-1 gap-2 md:gap-4">
-                      <div className="text-center md:text-left">
-                        <Label className="text-xs md:text-sm text-muted-foreground">Subtotal</Label>
-                        <div className="font-semibold text-xs md:text-lg">${grandTotal.toFixed(2)}</div>
-                      </div>
-                      
-                      <div className="text-center md:text-left">
-                        <Label htmlFor="discount" className="text-xs md:text-sm">Desconto</Label>
-                        <Input
-                          id="discount"
-                          className="h-6 md:h-10 text-xs md:text-sm text-center"
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={discount || ''}
-                          onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
-                          placeholder="0.00"
-                        />
-                      </div>
-                      
-                      <div className="text-center md:text-right">
-                        <Label className="text-xs md:text-sm text-muted-foreground">Total Final</Label>
-                        <div className="font-bold text-sm md:text-2xl text-primary">
-                          ${finalTotal.toFixed(2)}
+                        
+                        <div className="flex justify-between text-lg font-bold">
+                          <span>Total Final:</span>
+                          <span className="text-primary">${finalTotal.toFixed(2)}</span>
                         </div>
                       </div>
                     </div>
+                    
+                    <Button type="submit" size="lg" className="w-full h-12 text-base">
+                      Gerar Invoice
+                    </Button>
                   </div>
-                </div>
+                )}
 
-                <Button type="submit" variant="gradient" size="lg" className="w-full h-10 md:h-12 text-sm md:text-base">
-                  Gerar Invoice
-                </Button>
+                {/* Navigation Buttons */}
+                {currentStep < 3 && (
+                  <div className="flex justify-between">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={prevStep}
+                      disabled={currentStep === 1}
+                      className="flex items-center gap-2"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Voltar
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={nextStep}
+                      disabled={
+                        (currentStep === 1 && !isStep1Valid) ||
+                        (currentStep === 2 && !isStep2Valid)
+                      }
+                      className="flex items-center gap-2"
+                    >
+                      Próximo
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+
+                {currentStep === 3 && (
+                  <div className="flex justify-start">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={prevStep}
+                      className="flex items-center gap-2"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Voltar
+                    </Button>
+                  </div>
+                )}
               </form>
             </CardContent>
           </Card>
