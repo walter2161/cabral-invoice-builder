@@ -798,84 +798,92 @@ const InvoiceGenerator: React.FC = () => {
           <div className="print:shadow-none">
             <Card className="shadow-invoice print:shadow-none print:border-2 print:border-primary">
               <CardContent className="p-8">
-                {/* Invoice Header */}
-                <div className="text-center mb-8">
-                  <div className="mb-4 inline-block">
-                     <img src={logoPrint} alt="Logotipo Front Line Distribution" className="h-[60px] w-auto" />
-                   </div>
-                   <h1 className="text-3xl font-bold text-primary mb-2">
-                     INVOICE #{invoiceData?.invoiceNumber}
-                   </h1>
-                   <div className="space-y-1 text-sm">
-                     <p><strong>Empresa:</strong> Front Line Distribution</p>
-                     <p><strong>Endereço:</strong> 180 East Mount Pleasant Ave, Livingston, NJ 07039</p>
-                     <p><strong>Instagram:</strong> @frontlinedistribution</p>
-                     <p><strong>Website:</strong> frontlinedistribution.com</p>
+                {/* Invoice Header - Compact two-column layout */}
+                <div className="mb-4">
+                  <div className="grid grid-cols-2 gap-4 items-start">
+                    {/* Left Column - Logo and Company Info */}
+                    <div>
+                      <div className="mb-2">
+                        <img src={logoPrint} alt="Logotipo Front Line Distribution" className="h-[40px] w-auto" />
+                      </div>
+                      <div className="space-y-0.5 text-xs">
+                        <p><strong>Front Line Distribution</strong></p>
+                        <p>180 East Mount Pleasant Ave</p>
+                        <p>Livingston, NJ 07039</p>
+                        <p>@frontlinedistribution</p>
+                        <p>frontlinedistribution.com</p>
+                      </div>
+                    </div>
+                    
+                    {/* Right Column - Invoice and Client Info */}
+                    <div className="text-right">
+                      <h1 className="text-xl font-bold text-primary mb-3">
+                        INVOICE #{invoiceData?.invoiceNumber}
+                      </h1>
+                      <div className="space-y-0.5 text-xs">
+                        <p><strong>Cliente:</strong> {invoiceData?.clientName}</p>
+                        <p><strong>Entrega:</strong> {invoiceData?.deliveryCity}</p>
+                        <p><strong>Pedido:</strong> {invoiceData?.orderDate}</p>
+                        <p><strong>Pagamento:</strong> {invoiceData?.paymentDate}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <Separator className="my-6" />
+                <Separator className="my-3" />
 
-                {/* Client Information */}
-                <div className="mb-8 space-y-2">
-                  <p><strong>Cliente:</strong> {invoiceData?.clientName}</p>
-                  <p><strong>Entrega:</strong> {invoiceData?.deliveryCity}</p>
-                  <p><strong>Data do Pedido:</strong> {invoiceData?.orderDate}</p>
-                  <p><strong>Data de Pagamento:</strong> {invoiceData?.paymentDate}</p>
-                </div>
-
-                {/* Products Table */}
+                {/* Products Table - Compact layout */}
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse border border-border">
                     <thead>
                       <tr className="bg-muted">
-                        <th className="border border-border p-3 text-left">Produto</th>
-                        <th className="border border-border p-3 text-center">Qtd</th>
-                        <th className="border border-border p-3 text-center">Valor Unitário (USD)</th>
-                        <th className="border border-border p-3 text-center">Total (USD)</th>
+                        <th className="border border-border p-1.5 text-left text-xs">Produto</th>
+                        <th className="border border-border p-1.5 text-center text-xs">Qtd</th>
+                        <th className="border border-border p-1.5 text-center text-xs">Valor (USD)</th>
+                        <th className="border border-border p-1.5 text-center text-xs">Total (USD)</th>
                       </tr>
                     </thead>
                     <tbody>
                       {invoiceData?.items.map((item, index) => (
                         <tr key={index}>
-                          <td className="border border-border p-3">{item.product}</td>
-                          <td className="border border-border p-3 text-center">{item.quantity}</td>
-                          <td className="border border-border p-3 text-center">${item.unitPrice.toFixed(2)}</td>
-                          <td className="border border-border p-3 text-center">${item.total.toFixed(2)}</td>
+                          <td className="border border-border p-1.5 text-xs">{item.product}</td>
+                          <td className="border border-border p-1.5 text-center text-xs">{item.quantity}</td>
+                          <td className="border border-border p-1.5 text-center text-xs">${item.unitPrice.toFixed(2)}</td>
+                          <td className="border border-border p-1.5 text-center text-xs">${item.total.toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>
                     <tfoot>
                       <tr className="bg-muted">
-                        <td colSpan={3} className="border border-border p-3 text-right font-semibold">Subtotal</td>
-                        <td className="border border-border p-3 text-center">${invoiceData?.grandTotal.toFixed(2)}</td>
+                        <td colSpan={3} className="border border-border p-1.5 text-right font-semibold text-xs">Subtotal</td>
+                        <td className="border border-border p-1.5 text-center text-xs">${invoiceData?.grandTotal.toFixed(2)}</td>
                       </tr>
                       {invoiceData?.discount && invoiceData.discount > 0 && (
                         <tr className="bg-muted">
-                          <td colSpan={3} className="border border-border p-3 text-right font-semibold text-red-600">Desconto</td>
-                          <td className="border border-border p-3 text-center text-red-600">-${invoiceData.discount.toFixed(2)}</td>
+                          <td colSpan={3} className="border border-border p-1.5 text-right font-semibold text-red-600 text-xs">Desconto</td>
+                          <td className="border border-border p-1.5 text-center text-red-600 text-xs">-${invoiceData.discount.toFixed(2)}</td>
                         </tr>
                       )}
                       <tr className="bg-primary text-primary-foreground font-bold">
-                        <td colSpan={3} className="border border-border p-3 text-right text-lg">Total Final</td>
-                        <td className="border border-border p-3 text-center text-lg">${invoiceData?.finalTotal.toFixed(2)}</td>
+                        <td colSpan={3} className="border border-border p-1.5 text-right text-sm">Total Final</td>
+                        <td className="border border-border p-1.5 text-center text-sm">${invoiceData?.finalTotal.toFixed(2)}</td>
                       </tr>
                     </tfoot>
                   </table>
                 </div>
 
-                {/* Signatures */}
-                <div className="flex justify-between mt-16 mb-8">
+                {/* Signatures - Compact layout */}
+                <div className="flex justify-between mt-6 mb-4">
                   <div className="text-center w-2/5">
-                    <div className="border-t border-foreground pt-2">
-                      <p className="font-medium">{invoiceData?.clientName}</p>
-                      <p className="text-sm text-muted-foreground">Assinatura do Cliente</p>
+                    <div className="border-t border-foreground pt-1">
+                      <p className="font-medium text-xs">{invoiceData?.clientName}</p>
+                      <p className="text-xs text-muted-foreground">Assinatura do Cliente</p>
                     </div>
                   </div>
                   <div className="text-center w-2/5">
-                    <div className="border-t border-foreground pt-2">
-                      <p className="font-medium">Front Line Distribution</p>
-                      <p className="text-sm text-muted-foreground">Assinatura da Empresa</p>
+                    <div className="border-t border-foreground pt-1">
+                      <p className="font-medium text-xs">Front Line Distribution</p>
+                      <p className="text-xs text-muted-foreground">Assinatura da Empresa</p>
                     </div>
                   </div>
                 </div>
