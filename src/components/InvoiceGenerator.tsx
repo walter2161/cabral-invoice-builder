@@ -618,21 +618,23 @@ const InvoiceGenerator: React.FC = () => {
                               const iconConfig = getProductIcon(product.name, category.name);
                               const IconComponent = iconConfig.icon;
                               return (
-                                <div key={globalIndex} className="p-3 bg-white border rounded-lg space-y-2 shadow-sm">
-                                  <div className="flex items-center gap-3">
-                                    <div className={`w-8 h-8 rounded-lg ${iconConfig.bgColor} flex items-center justify-center`}>
-                                      <IconComponent className={`w-5 h-5 ${iconConfig.color}`} />
+                                <div key={globalIndex} className="p-3 bg-white border rounded-lg shadow-sm">
+                                  <div className="grid grid-cols-4 gap-3 items-center">
+                                    {/* Nome do produto + ícone - 50% */}
+                                    <div className="flex items-center gap-2">
+                                      <div className={`w-6 h-6 rounded-lg ${iconConfig.bgColor} flex items-center justify-center flex-shrink-0`}>
+                                        <IconComponent className={`w-4 h-4 ${iconConfig.color}`} />
+                                      </div>
+                                      <Label className="text-xs font-medium leading-tight">{product.name}</Label>
                                     </div>
-                                    <Label className="text-sm font-medium">{product.name}</Label>
-                                  </div>
-                                  
-                                  <div className="grid grid-cols-3 gap-2">
+                                    
+                                    {/* Quantidade - 16.67% */}
                                     <div>
                                       <Label htmlFor={`qty-${globalIndex}`} className="text-xs text-muted-foreground">
-                                        Quantidade
+                                        Qtd
                                       </Label>
                                       <Input
-                                        className="h-10 text-sm"
+                                        className="h-8 text-xs"
                                         id={`qty-${globalIndex}`}
                                         type="number"
                                         min="0"
@@ -641,12 +643,14 @@ const InvoiceGenerator: React.FC = () => {
                                         placeholder="0"
                                       />
                                     </div>
+                                    
+                                    {/* Valor Unitário - 16.67% */}
                                     <div>
                                       <Label htmlFor={`price-${globalIndex}`} className="text-xs text-muted-foreground">
-                                        Valor Unitário (USD)
+                                        Valor (USD)
                                       </Label>
                                       <Input
-                                        className="h-10 text-sm"
+                                        className="h-8 text-xs"
                                         id={`price-${globalIndex}`}
                                         type="number"
                                         min="0"
@@ -656,9 +660,11 @@ const InvoiceGenerator: React.FC = () => {
                                         placeholder="0.00"
                                       />
                                     </div>
+                                    
+                                    {/* Total - 16.67% */}
                                     <div className="text-right">
                                       <Label className="text-xs text-muted-foreground">Total</Label>
-                                      <div className="font-semibold text-sm bg-muted p-2 rounded text-center">
+                                      <div className="font-semibold text-xs bg-muted p-2 rounded text-center">
                                         ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
                                       </div>
                                     </div>
