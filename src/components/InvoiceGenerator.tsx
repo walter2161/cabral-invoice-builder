@@ -619,17 +619,17 @@ const InvoiceGenerator: React.FC = () => {
                               const IconComponent = iconConfig.icon;
                               return (
                                 <div key={globalIndex} className="p-3 bg-white border rounded-lg shadow-sm">
-                                  <div className="grid grid-cols-4 gap-3 items-center">
-                                    {/* Nome do produto + ícone - 50% */}
-                                    <div className="flex items-center gap-2">
+                                  <div className="grid grid-cols-12 gap-3 items-center">
+                                    {/* Nome do produto + ícone - 33% (4 colunas de 12) */}
+                                    <div className="col-span-4 flex items-center gap-2">
                                       <div className={`w-6 h-6 rounded-lg ${iconConfig.bgColor} flex items-center justify-center flex-shrink-0`}>
                                         <IconComponent className={`w-4 h-4 ${iconConfig.color}`} />
                                       </div>
                                       <Label className="text-xs font-medium leading-tight">{product.name}</Label>
                                     </div>
                                     
-                                    {/* Quantidade - 16.67% */}
-                                    <div>
+                                    {/* Quantidade - 22% (2.67 colunas) */}
+                                    <div className="col-span-2">
                                       <Label htmlFor={`qty-${globalIndex}`} className="text-xs text-muted-foreground">
                                         Qtd
                                       </Label>
@@ -644,8 +644,8 @@ const InvoiceGenerator: React.FC = () => {
                                       />
                                     </div>
                                     
-                                    {/* Valor Unitário - 16.67% */}
-                                    <div>
+                                    {/* Valor Unitário - 22% (3 colunas) */}
+                                    <div className="col-span-3">
                                       <Label htmlFor={`price-${globalIndex}`} className="text-xs text-muted-foreground">
                                         Valor (USD)
                                       </Label>
@@ -661,8 +661,8 @@ const InvoiceGenerator: React.FC = () => {
                                       />
                                     </div>
                                     
-                                    {/* Total - 16.67% */}
-                                    <div className="text-right">
+                                    {/* Total - 22% (3 colunas) */}
+                                    <div className="col-span-3 text-right">
                                       <Label className="text-xs text-muted-foreground">Total</Label>
                                       <div className="font-semibold text-xs bg-muted p-2 rounded text-center">
                                         ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
