@@ -876,23 +876,39 @@ const InvoiceGenerator: React.FC = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-4 print:hidden">
+                <div className="flex flex-col gap-3 print:hidden">
                   <Button 
                     onClick={handlePrint} 
-                    variant="export" 
                     size="lg" 
-                    className="flex-1"
+                    className="w-full h-12"
                   >
                     Exportar PDF / Imprimir
                   </Button>
-                  <Button 
-                    onClick={() => setShowInvoice(false)} 
-                    variant="outline" 
-                    size="lg"
-                    className="flex-1"
-                  >
-                    Nova Invoice
-                  </Button>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button 
+                      onClick={() => {
+                        setShowInvoice(false);
+                        setCurrentStep(3);
+                      }} 
+                      variant="outline" 
+                      size="lg"
+                      className="h-12"
+                    >
+                      Voltar
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        setShowInvoice(false);
+                        setCurrentStep(1);
+                      }} 
+                      variant="default" 
+                      size="lg"
+                      className="h-12"
+                    >
+                      Nova Invoice
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
