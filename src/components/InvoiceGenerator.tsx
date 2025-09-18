@@ -808,8 +808,7 @@ const InvoiceGenerator: React.FC = () => {
                       </div>
                       <div className="space-y-0.5 text-xs">
                         <p><strong>Front Line Distribution</strong></p>
-                        <p>180 East Mount Pleasant Ave</p>
-                        <p>Livingston, NJ 07039</p>
+                        <p>608 Mesilla Dr, Kissimmee, FL 34758, EUA</p>
                         <p>@frontlinedistribution</p>
                         <p>frontlinedistribution.com</p>
                       </div>
