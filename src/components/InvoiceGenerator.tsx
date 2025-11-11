@@ -1081,7 +1081,7 @@ const InvoiceGenerator: React.FC = () => {
                   </div>
                   <div className="text-center w-2/5">
                     <div className="border-t border-foreground pt-1">
-                      <p className="font-medium text-xs">Front Line Distribution</p>
+                      <p className="font-medium text-xs">DON CABRAL</p>
                       <p className="text-xs text-muted-foreground">Assinatura da Empresa</p>
                     </div>
                   </div>
