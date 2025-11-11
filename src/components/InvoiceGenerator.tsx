@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Plus, X, Coffee, Droplets, Wheat, Candy, Wine, Zap, Soup, Cookie, Beef, ChevronLeft, ChevronRight, User, Package, FileText } from 'lucide-react';
 import logoImage from '@/assets/logo-don-cabral-new.png';
-import logoPrint from '@/assets/logo-front-line-black.png';
+import logoPrint from '@/assets/logo-don-cabral-invoice.png';
 
 interface Product {
   name: string;
@@ -804,13 +804,13 @@ const InvoiceGenerator: React.FC = () => {
                     {/* Left Column - Logo and Company Info */}
                     <div>
                       <div className="mb-2">
-                        <img src={logoPrint} alt="Logotipo Front Line Distribution" className="h-[40px] w-auto" />
+                        <img src={logoPrint} alt="Logotipo Don Cabral" className="h-[40px] w-auto" />
                       </div>
                       <div className="space-y-0.5 text-xs">
-                        <p><strong>Front Line Distribution</strong></p>
+                        <p><strong>Don Cabral</strong></p>
                         <p>608 Mesilla Dr, Kissimmee, FL 34758, EUA</p>
-                        <p>@frontlinedistribution</p>
-                        <p>frontlinedistribution.com</p>
+                        <p>+1 (862) 930-0407</p>
+                        <p>doncabral.com.br</p>
                       </div>
                     </div>
                     
