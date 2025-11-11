@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Plus, X, Coffee, Droplets, Wheat, Candy, Wine, Zap, Soup, Cookie, Beef, ChevronLeft, ChevronRight, User, Package, FileText } from 'lucide-react';
-import logoImage from '@/assets/logo-front-line-white.png';
+import logoImage from '@/assets/logo-don-cabral-new.png';
 import logoPrint from '@/assets/logo-front-line-black.png';
 
 interface Product {
