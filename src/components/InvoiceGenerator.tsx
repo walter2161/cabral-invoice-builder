@@ -18,6 +18,9 @@ interface InvoiceItem {
   quantity: number;
   unitPrice: number;
   total: number;
+  type?: 'regular' | 'meat';
+  weight?: number;
+  pricePerPound?: number;
 }
 
 interface ManualItem {
@@ -25,6 +28,14 @@ interface ManualItem {
   product: string;
   quantity: number;
   unitPrice: number;
+}
+
+interface MeatItem {
+  id: string;
+  product: string;
+  weight: number; // em libras
+  pricePerPound: number;
+  quantity: number; // quantidade de pacotes/unidades
 }
 
 interface InvoiceData {
@@ -211,6 +222,14 @@ const InvoiceGenerator: React.FC = () => {
     return [];
   });
 
+  const [meatItems, setMeatItems] = useState<MeatItem[]>(() => {
+    const saved = localStorage.getItem('invoiceMeatItems');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return [];
+  });
+
   // Save to localStorage whenever data changes
   useEffect(() => {
     localStorage.setItem('invoiceFormData', JSON.stringify(formData));
@@ -231,6 +250,10 @@ const InvoiceGenerator: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('invoiceManualItems', JSON.stringify(manualItems));
   }, [manualItems]);
+
+  useEffect(() => {
+    localStorage.setItem('invoiceMeatItems', JSON.stringify(meatItems));
+  }, [meatItems]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -262,7 +285,25 @@ const InvoiceGenerator: React.FC = () => {
           product: item.product,
           quantity: item.quantity,
           unitPrice: item.unitPrice,
-          total
+          total,
+          type: 'regular'
+        });
+        grandTotal += total;
+      }
+    });
+
+    // Add meat items
+    meatItems.forEach(item => {
+      if (item.quantity > 0 && item.weight > 0 && item.pricePerPound > 0) {
+        const total = item.quantity * item.weight * item.pricePerPound;
+        items.push({
+          product: item.product,
+          quantity: item.quantity,
+          unitPrice: item.pricePerPound,
+          total,
+          type: 'meat',
+          weight: item.weight,
+          pricePerPound: item.pricePerPound
         });
         grandTotal += total;
       }
@@ -311,12 +352,33 @@ const InvoiceGenerator: React.FC = () => {
     setManualItems(prev => [...prev, newItem]);
   };
 
+  const addMeatItem = () => {
+    const newItem: MeatItem = {
+      id: Date.now().toString(),
+      product: '',
+      weight: 0,
+      pricePerPound: 0,
+      quantity: 0
+    };
+    setMeatItems(prev => [...prev, newItem]);
+  };
+
   const removeManualItem = (id: string) => {
     setManualItems(prev => prev.filter(item => item.id !== id));
   };
 
+  const removeMeatItem = (id: string) => {
+    setMeatItems(prev => prev.filter(item => item.id !== id));
+  };
+
   const updateManualItem = (id: string, field: keyof ManualItem, value: string | number) => {
     setManualItems(prev => prev.map(item => 
+      item.id === id ? { ...item, [field]: value } : item
+    ));
+  };
+
+  const updateMeatItem = (id: string, field: keyof MeatItem, value: string | number) => {
+    setMeatItems(prev => prev.map(item => 
       item.id === id ? { ...item, [field]: value } : item
     ));
   };
@@ -375,6 +437,13 @@ const InvoiceGenerator: React.FC = () => {
         grandTotal += item.quantity * item.unitPrice;
       }
     });
+
+    // Add meat items total
+    meatItems.forEach(item => {
+      if (item.quantity > 0 && item.weight > 0 && item.pricePerPound > 0) {
+        grandTotal += item.quantity * item.weight * item.pricePerPound;
+      }
+    });
     
     return grandTotal;
   };
@@ -383,7 +452,7 @@ const InvoiceGenerator: React.FC = () => {
   const finalTotal = grandTotal - discount;
 
   const isStep1Valid = formData.invoiceNumber && formData.clientName && formData.deliveryCity && formData.orderDate && formData.paymentDate;
-  const isStep2Valid = Object.values(productQuantities).some(qty => qty > 0) || manualItems.some(item => item.quantity > 0 && item.unitPrice > 0);
+  const isStep2Valid = Object.values(productQuantities).some(qty => qty > 0) || manualItems.some(item => item.quantity > 0 && item.unitPrice > 0) || meatItems.some(item => item.quantity > 0 && item.weight > 0 && item.pricePerPound > 0);
 
   const nextStep = () => {
     if (currentStep < 3) setCurrentStep(currentStep + 1);
@@ -527,22 +596,34 @@ const InvoiceGenerator: React.FC = () => {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-semibold text-primary">Produtos</h3>
-                      <Button 
-                        type="button" 
-                        onClick={addManualItem} 
-                        variant="outline" 
-                        size="sm"
-                        className="flex items-center gap-2"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Adicionar Item Manual
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button 
+                          type="button" 
+                          onClick={addManualItem} 
+                          variant="outline" 
+                          size="sm"
+                          className="flex items-center gap-2"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Adicionar Item
+                        </Button>
+                        <Button 
+                          type="button" 
+                          onClick={addMeatItem} 
+                          variant="outline" 
+                          size="sm"
+                          className="flex items-center gap-2"
+                        >
+                          <Beef className="h-4 w-4" />
+                          Adicionar Carne
+                        </Button>
+                      </div>
                     </div>
                     
                     {/* Manual Items */}
                     {manualItems.length > 0 && (
                       <div className="space-y-3 p-4 bg-muted/30 rounded-lg border-2 border-dashed">
-                        <h4 className="text-md font-semibold text-primary">Itens Manuais</h4>
+                        <h4 className="text-md font-semibold text-primary">Itens</h4>
                         {manualItems.map((item) => (
                           <div key={item.id} className="grid grid-cols-1 md:grid-cols-5 gap-2 items-end p-3 border rounded-lg bg-background">
                             <div>
@@ -594,6 +675,90 @@ const InvoiceGenerator: React.FC = () => {
                               <Button
                                 type="button"
                                 onClick={() => removeManualItem(item.id)}
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Meat Items */}
+                    {meatItems.length > 0 && (
+                      <div className="space-y-3 p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg border-2 border-dashed border-orange-200">
+                        <h4 className="text-md font-semibold text-orange-700 dark:text-orange-400 flex items-center gap-2">
+                          <Beef className="h-5 w-5" />
+                          Carnes
+                        </h4>
+                        {meatItems.map((item) => (
+                          <div key={item.id} className="grid grid-cols-1 md:grid-cols-6 gap-2 items-end p-3 border rounded-lg bg-background">
+                            <div>
+                              <Label htmlFor={`meat-product-${item.id}`} className="text-sm text-muted-foreground">
+                                Nome do Produto
+                              </Label>
+                              <Input
+                                id={`meat-product-${item.id}`}
+                                type="text"
+                                value={item.product}
+                                onChange={(e) => updateMeatItem(item.id, 'product', e.target.value)}
+                                placeholder="Nome da carne"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`meat-weight-${item.id}`} className="text-sm text-muted-foreground">
+                                Peso (lbs)
+                              </Label>
+                              <Input
+                                id={`meat-weight-${item.id}`}
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={item.weight || ''}
+                                onChange={(e) => updateMeatItem(item.id, 'weight', parseFloat(e.target.value) || 0)}
+                                placeholder="0.00"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`meat-price-${item.id}`} className="text-sm text-muted-foreground">
+                                Valor/lb (USD)
+                              </Label>
+                              <Input
+                                id={`meat-price-${item.id}`}
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={item.pricePerPound || ''}
+                                onChange={(e) => updateMeatItem(item.id, 'pricePerPound', parseFloat(e.target.value) || 0)}
+                                placeholder="0.00"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`meat-qty-${item.id}`} className="text-sm text-muted-foreground">
+                                Quantidade
+                              </Label>
+                              <Input
+                                id={`meat-qty-${item.id}`}
+                                type="number"
+                                min="0"
+                                value={item.quantity || ''}
+                                onChange={(e) => updateMeatItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
+                                placeholder="0"
+                              />
+                            </div>
+                            <div className="text-right">
+                              <Label className="text-sm text-muted-foreground">Total</Label>
+                              <div className="font-semibold">
+                                ${(item.quantity * item.weight * item.pricePerPound).toFixed(2)}
+                              </div>
+                            </div>
+                            <div className="flex justify-center">
+                              <Button
+                                type="button"
+                                onClick={() => removeMeatItem(item.id)}
                                 variant="ghost"
                                 size="sm"
                                 className="text-destructive hover:text-destructive"
@@ -708,6 +873,20 @@ const InvoiceGenerator: React.FC = () => {
                                 <div key={item.id} className="flex justify-between items-center p-2 bg-background rounded border">
                                   <span className="text-sm">{item.product}</span>
                                   <span className="text-sm font-medium">{item.quantity}x ${item.unitPrice.toFixed(2)} = ${(item.quantity * item.unitPrice).toFixed(2)}</span>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })}
+                          {meatItems.map(item => {
+                            if (item.quantity > 0 && item.weight > 0 && item.pricePerPound > 0) {
+                              return (
+                                <div key={item.id} className="flex justify-between items-center p-2 bg-orange-50 dark:bg-orange-950/20 rounded border border-orange-200">
+                                  <span className="text-sm flex items-center gap-2">
+                                    <Beef className="h-4 w-4 text-orange-600" />
+                                    {item.product}
+                                  </span>
+                                  <span className="text-sm font-medium">{item.quantity}x {item.weight}lbs x ${item.pricePerPound.toFixed(2)}/lb = ${(item.quantity * item.weight * item.pricePerPound).toFixed(2)}</span>
                                 </div>
                               );
                             }
@@ -837,17 +1016,28 @@ const InvoiceGenerator: React.FC = () => {
                     <thead>
                       <tr className="bg-muted">
                         <th className="border border-border p-1.5 text-left text-xs">Produto</th>
+                        <th className="border border-border p-1.5 text-center text-xs">Peso (lbs)</th>
+                        <th className="border border-border p-1.5 text-center text-xs">Valor/lb (USD)</th>
                         <th className="border border-border p-1.5 text-center text-xs">Qtd</th>
-                        <th className="border border-border p-1.5 text-center text-xs">Valor (USD)</th>
                         <th className="border border-border p-1.5 text-center text-xs">Total (USD)</th>
                       </tr>
                     </thead>
                     <tbody>
                       {invoiceData?.items.map((item, index) => (
-                        <tr key={index}>
-                          <td className="border border-border p-1.5 text-xs">{item.product}</td>
-                          <td className="border border-border p-1.5 text-center text-xs">{item.quantity}</td>
-                          <td className="border border-border p-1.5 text-center text-xs">${item.unitPrice.toFixed(2)}</td>
+                        <tr key={index} className={item.type === 'meat' ? 'bg-orange-50/50' : ''}>
+                          <td className="border border-border p-1.5 text-xs">
+                            {item.type === 'meat' && <Beef className="inline h-3 w-3 mr-1 text-orange-600" />}
+                            {item.product}
+                          </td>
+                          <td className="border border-border p-1.5 text-center text-xs">
+                            {item.type === 'meat' ? item.weight?.toFixed(2) : '-'}
+                          </td>
+                          <td className="border border-border p-1.5 text-center text-xs">
+                            {item.type === 'meat' ? `$${item.pricePerPound?.toFixed(2)}` : '-'}
+                          </td>
+                          <td className="border border-border p-1.5 text-center text-xs">
+                            {item.type === 'meat' ? item.quantity : `${item.quantity} x $${item.unitPrice.toFixed(2)}`}
+                          </td>
                           <td className="border border-border p-1.5 text-center text-xs">${item.total.toFixed(2)}</td>
                         </tr>
                       ))}
