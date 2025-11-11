@@ -695,7 +695,7 @@ const InvoiceGenerator: React.FC = () => {
                           Carnes
                         </h4>
                         {meatItems.map((item) => (
-                          <div key={item.id} className="grid grid-cols-1 md:grid-cols-6 gap-2 items-end p-3 border rounded-lg bg-background">
+                          <div key={item.id} className="grid grid-cols-1 md:grid-cols-7 gap-2 items-end p-3 border rounded-lg bg-background">
                             <div>
                               <Label htmlFor={`meat-product-${item.id}`} className="text-sm text-muted-foreground">
                                 Nome do Produto
@@ -706,6 +706,20 @@ const InvoiceGenerator: React.FC = () => {
                                 value={item.product}
                                 onChange={(e) => updateMeatItem(item.id, 'product', e.target.value)}
                                 placeholder="Nome da carne"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`meat-price-${item.id}`} className="text-sm text-muted-foreground">
+                                Valor/lb (USD)
+                              </Label>
+                              <Input
+                                id={`meat-price-${item.id}`}
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={item.pricePerPound || ''}
+                                onChange={(e) => updateMeatItem(item.id, 'pricePerPound', parseFloat(e.target.value) || 0)}
+                                placeholder="0.00"
                               />
                             </div>
                             <div>
@@ -722,19 +736,11 @@ const InvoiceGenerator: React.FC = () => {
                                 placeholder="0.00"
                               />
                             </div>
-                            <div>
-                              <Label htmlFor={`meat-price-${item.id}`} className="text-sm text-muted-foreground">
-                                Valor/lb (USD)
-                              </Label>
-                              <Input
-                                id={`meat-price-${item.id}`}
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                value={item.pricePerPound || ''}
-                                onChange={(e) => updateMeatItem(item.id, 'pricePerPound', parseFloat(e.target.value) || 0)}
-                                placeholder="0.00"
-                              />
+                            <div className="text-center">
+                              <Label className="text-sm text-muted-foreground">Valor/Caixa</Label>
+                              <div className="font-semibold text-sm bg-muted p-2 rounded">
+                                ${(item.pricePerPound * item.weight).toFixed(2)}
+                              </div>
                             </div>
                             <div>
                               <Label htmlFor={`meat-qty-${item.id}`} className="text-sm text-muted-foreground">
@@ -1016,8 +1022,9 @@ const InvoiceGenerator: React.FC = () => {
                     <thead>
                       <tr className="bg-muted">
                         <th className="border border-border p-1.5 text-left text-xs">Produto</th>
-                        <th className="border border-border p-1.5 text-center text-xs">Peso (lbs)</th>
                         <th className="border border-border p-1.5 text-center text-xs">Valor/lb (USD)</th>
+                        <th className="border border-border p-1.5 text-center text-xs">Peso (lbs)</th>
+                        <th className="border border-border p-1.5 text-center text-xs">Valor/Caixa (USD)</th>
                         <th className="border border-border p-1.5 text-center text-xs">Qtd</th>
                         <th className="border border-border p-1.5 text-center text-xs">Total (USD)</th>
                       </tr>
@@ -1030,13 +1037,16 @@ const InvoiceGenerator: React.FC = () => {
                             {item.product}
                           </td>
                           <td className="border border-border p-1.5 text-center text-xs">
-                            {item.type === 'meat' ? item.weight?.toFixed(2) : '-'}
-                          </td>
-                          <td className="border border-border p-1.5 text-center text-xs">
                             {item.type === 'meat' ? `$${item.pricePerPound?.toFixed(2)}` : '-'}
                           </td>
                           <td className="border border-border p-1.5 text-center text-xs">
-                            {item.type === 'meat' ? item.quantity : `${item.quantity} x $${item.unitPrice.toFixed(2)}`}
+                            {item.type === 'meat' ? item.weight?.toFixed(2) : '-'}
+                          </td>
+                          <td className="border border-border p-1.5 text-center text-xs">
+                            {item.type === 'meat' ? `$${((item.pricePerPound || 0) * (item.weight || 0)).toFixed(2)}` : `$${item.unitPrice.toFixed(2)}`}
+                          </td>
+                          <td className="border border-border p-1.5 text-center text-xs">
+                            {item.quantity}
                           </td>
                           <td className="border border-border p-1.5 text-center text-xs">${item.total.toFixed(2)}</td>
                         </tr>
