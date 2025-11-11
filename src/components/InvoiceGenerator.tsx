@@ -19,6 +19,7 @@ interface InvoiceItem {
   unit: 'unidade' | 'caixa';
   unitPrice: number;
   weight: number;
+  weightUnit: 'kg' | 'lbs';
   total: number;
 }
 
@@ -29,6 +30,7 @@ interface ManualItem {
   unit: 'unidade' | 'caixa';
   unitPrice: number;
   weight: number;
+  weightUnit: 'kg' | 'lbs';
 }
 
 interface InvoiceData {
@@ -215,6 +217,14 @@ const InvoiceGenerator: React.FC = () => {
     }
     return {};
   });
+
+  const [productWeightUnits, setProductWeightUnits] = useState<{ [key: string]: 'kg' | 'lbs' }>(() => {
+    const saved = localStorage.getItem('invoiceProductWeightUnits');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {};
+  });
   
   const [discount, setDiscount] = useState<number>(() => {
     const saved = localStorage.getItem('invoiceDiscount');
@@ -260,6 +270,10 @@ const InvoiceGenerator: React.FC = () => {
     localStorage.setItem('invoiceProductUnits', JSON.stringify(productUnits));
   }, [productUnits]);
 
+  useEffect(() => {
+    localStorage.setItem('invoiceProductWeightUnits', JSON.stringify(productWeightUnits));
+  }, [productWeightUnits]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -271,6 +285,7 @@ const InvoiceGenerator: React.FC = () => {
       const unitPrice = productPrices[product.name] || 0;
       const weight = productWeights[product.name] || 0;
       const unit = productUnits[product.name] || 'unidade';
+      const weightUnit = productWeightUnits[product.name] || 'kg';
       
       if (quantity > 0 && unitPrice > 0) {
         const total = quantity * unitPrice;
@@ -281,6 +296,7 @@ const InvoiceGenerator: React.FC = () => {
           unit,
           unitPrice,
           weight,
+          weightUnit,
           total
         });
         grandTotal += total;
@@ -298,6 +314,7 @@ const InvoiceGenerator: React.FC = () => {
           unit: item.unit,
           unitPrice: item.unitPrice,
           weight: item.weight,
+          weightUnit: item.weightUnit,
           total
         });
         grandTotal += total;
@@ -351,6 +368,13 @@ const InvoiceGenerator: React.FC = () => {
     }));
   };
 
+  const updateWeightUnit = (productName: string, weightUnit: 'kg' | 'lbs') => {
+    setProductWeightUnits(prev => ({
+      ...prev,
+      [productName]: weightUnit
+    }));
+  };
+
   const addManualItem = () => {
     const newItem: ManualItem = {
       id: Date.now().toString(),
@@ -358,7 +382,8 @@ const InvoiceGenerator: React.FC = () => {
       quantity: 0,
       unit: 'unidade',
       unitPrice: 0,
-      weight: 0
+      weight: 0,
+      weightUnit: 'kg'
     };
     setManualItems(prev => [...prev, newItem]);
   };
@@ -597,7 +622,7 @@ const InvoiceGenerator: React.FC = () => {
                         <h4 className="text-md font-semibold text-primary">Itens Manuais</h4>
                         {manualItems.map((item) => {
                           return (
-                            <div key={item.id} className="grid grid-cols-1 md:grid-cols-7 gap-2 items-end p-3 border rounded-lg bg-background">
+                            <div key={item.id} className="grid grid-cols-1 md:grid-cols-8 gap-2 items-end p-3 border rounded-lg bg-background">
                               <div className="md:col-span-2">
                                 <Label htmlFor={`manual-product-${item.id}`} className="text-sm text-muted-foreground">
                                   Nome do Produto
@@ -653,7 +678,7 @@ const InvoiceGenerator: React.FC = () => {
                               </div>
                               <div>
                                 <Label htmlFor={`manual-weight-${item.id}`} className="text-sm text-muted-foreground">
-                                  Peso (kg)
+                                  Peso
                                 </Label>
                                 <Input
                                   id={`manual-weight-${item.id}`}
@@ -664,6 +689,20 @@ const InvoiceGenerator: React.FC = () => {
                                   onChange={(e) => updateManualItem(item.id, 'weight', parseFloat(e.target.value) || 0)}
                                   placeholder="0"
                                 />
+                              </div>
+                              <div>
+                                <Label htmlFor={`manual-weightunit-${item.id}`} className="text-sm text-muted-foreground">
+                                  Unidade
+                                </Label>
+                                <select
+                                  id={`manual-weightunit-${item.id}`}
+                                  value={item.weightUnit || 'kg'}
+                                  onChange={(e) => updateManualItem(item.id, 'weightUnit', e.target.value as 'kg' | 'lbs')}
+                                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                                >
+                                  <option value="kg">kg</option>
+                                  <option value="lbs">lbs</option>
+                                </select>
                               </div>
                               <div className="text-right">
                                 <Label className="text-sm text-muted-foreground">Total</Label>
@@ -703,6 +742,7 @@ const InvoiceGenerator: React.FC = () => {
                               const price = productPrices[product.name] || 0;
                               const weight = productWeights[product.name] || 0;
                               const unit = productUnits[product.name] || 'unidade';
+                              const weightUnit = productWeightUnits[product.name] || 'kg';
                               
                               return (
                                 <div key={globalIndex} className="p-3 bg-white border rounded-lg shadow-sm">
@@ -716,9 +756,9 @@ const InvoiceGenerator: React.FC = () => {
                                     </div>
                                     
                                     {/* Quantidade */}
-                                    <div className="col-span-2">
+                                    <div className="col-span-1">
                                       <Label htmlFor={`qty-${globalIndex}`} className="text-xs text-muted-foreground">
-                                        Quantidade
+                                        Qtd
                                       </Label>
                                       <Input
                                         className="h-8 text-xs"
@@ -767,7 +807,7 @@ const InvoiceGenerator: React.FC = () => {
                                     {/* Peso */}
                                     <div className="col-span-1">
                                       <Label htmlFor={`weight-${globalIndex}`} className="text-xs text-muted-foreground">
-                                        Peso (kg)
+                                        Peso
                                       </Label>
                                       <Input
                                         className="h-8 text-xs"
@@ -779,6 +819,22 @@ const InvoiceGenerator: React.FC = () => {
                                         onChange={(e) => updateWeight(product.name, parseFloat(e.target.value) || 0)}
                                         placeholder="0"
                                       />
+                                    </div>
+
+                                    {/* Unidade de Peso */}
+                                    <div className="col-span-1">
+                                      <Label htmlFor={`weightunit-${globalIndex}`} className="text-xs text-muted-foreground">
+                                        Un.
+                                      </Label>
+                                      <select
+                                        id={`weightunit-${globalIndex}`}
+                                        value={weightUnit}
+                                        onChange={(e) => updateWeightUnit(product.name, e.target.value as 'kg' | 'lbs')}
+                                        className="flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs ring-offset-background"
+                                      >
+                                        <option value="kg">kg</option>
+                                        <option value="lbs">lbs</option>
+                                      </select>
                                     </div>
                                     
                                     {/* Total */}
