@@ -16,10 +16,7 @@ interface Product {
 interface InvoiceItem {
   product: string;
   quantity: number;
-  unit: 'unidade' | 'caixa';
   unitPrice: number;
-  weight: number;
-  weightUnit: 'kg' | 'lbs';
   total: number;
 }
 
@@ -27,10 +24,7 @@ interface ManualItem {
   id: string;
   product: string;
   quantity: number;
-  unit: 'unidade' | 'caixa';
   unitPrice: number;
-  weight: number;
-  weightUnit: 'kg' | 'lbs';
 }
 
 interface InvoiceData {
@@ -201,30 +195,6 @@ const InvoiceGenerator: React.FC = () => {
     });
     return prices;
   });
-
-  const [productWeights, setProductWeights] = useState<{ [key: string]: number }>(() => {
-    const saved = localStorage.getItem('invoiceProductWeights');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {};
-  });
-
-  const [productUnits, setProductUnits] = useState<{ [key: string]: 'unidade' | 'caixa' }>(() => {
-    const saved = localStorage.getItem('invoiceProductUnits');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {};
-  });
-
-  const [productWeightUnits, setProductWeightUnits] = useState<{ [key: string]: 'kg' | 'lbs' }>(() => {
-    const saved = localStorage.getItem('invoiceProductWeightUnits');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {};
-  });
   
   const [discount, setDiscount] = useState<number>(() => {
     const saved = localStorage.getItem('invoiceDiscount');
@@ -262,18 +232,6 @@ const InvoiceGenerator: React.FC = () => {
     localStorage.setItem('invoiceManualItems', JSON.stringify(manualItems));
   }, [manualItems]);
 
-  useEffect(() => {
-    localStorage.setItem('invoiceProductWeights', JSON.stringify(productWeights));
-  }, [productWeights]);
-
-  useEffect(() => {
-    localStorage.setItem('invoiceProductUnits', JSON.stringify(productUnits));
-  }, [productUnits]);
-
-  useEffect(() => {
-    localStorage.setItem('invoiceProductWeightUnits', JSON.stringify(productWeightUnits));
-  }, [productWeightUnits]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -283,20 +241,13 @@ const InvoiceGenerator: React.FC = () => {
     products.forEach(product => {
       const quantity = productQuantities[product.name] || 0;
       const unitPrice = productPrices[product.name] || 0;
-      const weight = productWeights[product.name] || 0;
-      const unit = productUnits[product.name] || 'unidade';
-      const weightUnit = productWeightUnits[product.name] || 'kg';
       
       if (quantity > 0 && unitPrice > 0) {
         const total = quantity * unitPrice;
-        
         items.push({
           product: product.name,
           quantity,
-          unit,
           unitPrice,
-          weight,
-          weightUnit,
           total
         });
         grandTotal += total;
@@ -307,14 +258,10 @@ const InvoiceGenerator: React.FC = () => {
     manualItems.forEach(item => {
       if (item.quantity > 0 && item.unitPrice > 0) {
         const total = item.quantity * item.unitPrice;
-        
         items.push({
           product: item.product,
           quantity: item.quantity,
-          unit: item.unit,
           unitPrice: item.unitPrice,
-          weight: item.weight,
-          weightUnit: item.weightUnit,
           total
         });
         grandTotal += total;
@@ -354,36 +301,12 @@ const InvoiceGenerator: React.FC = () => {
     }));
   };
 
-  const updateWeight = (productName: string, weight: number) => {
-    setProductWeights(prev => ({
-      ...prev,
-      [productName]: weight
-    }));
-  };
-
-  const updateUnit = (productName: string, unit: 'unidade' | 'caixa') => {
-    setProductUnits(prev => ({
-      ...prev,
-      [productName]: unit
-    }));
-  };
-
-  const updateWeightUnit = (productName: string, weightUnit: 'kg' | 'lbs') => {
-    setProductWeightUnits(prev => ({
-      ...prev,
-      [productName]: weightUnit
-    }));
-  };
-
   const addManualItem = () => {
     const newItem: ManualItem = {
       id: Date.now().toString(),
       product: '',
       quantity: 0,
-      unit: 'unidade',
-      unitPrice: 0,
-      weight: 0,
-      weightUnit: 'kg'
+      unitPrice: 0
     };
     setManualItems(prev => [...prev, newItem]);
   };
@@ -620,110 +543,66 @@ const InvoiceGenerator: React.FC = () => {
                     {manualItems.length > 0 && (
                       <div className="space-y-3 p-4 bg-muted/30 rounded-lg border-2 border-dashed">
                         <h4 className="text-md font-semibold text-primary">Itens Manuais</h4>
-                        {manualItems.map((item) => {
-                          return (
-                            <div key={item.id} className="grid grid-cols-1 md:grid-cols-8 gap-2 items-end p-3 border rounded-lg bg-background">
-                              <div className="md:col-span-2">
-                                <Label htmlFor={`manual-product-${item.id}`} className="text-sm text-muted-foreground">
-                                  Nome do Produto
-                                </Label>
-                                <Input
-                                  id={`manual-product-${item.id}`}
-                                  type="text"
-                                  value={item.product}
-                                  onChange={(e) => updateManualItem(item.id, 'product', e.target.value)}
-                                  placeholder="Nome do produto"
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor={`manual-qty-${item.id}`} className="text-sm text-muted-foreground">
-                                  Quantidade
-                                </Label>
-                                <Input
-                                  id={`manual-qty-${item.id}`}
-                                  type="number"
-                                  min="0"
-                                  value={item.quantity || ''}
-                                  onChange={(e) => updateManualItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
-                                  placeholder="0"
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor={`manual-unit-${item.id}`} className="text-sm text-muted-foreground">
-                                  Tipo
-                                </Label>
-                                <select
-                                  id={`manual-unit-${item.id}`}
-                                  value={item.unit || 'unidade'}
-                                  onChange={(e) => updateManualItem(item.id, 'unit', e.target.value as 'unidade' | 'caixa')}
-                                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                                >
-                                  <option value="unidade">Unidade</option>
-                                  <option value="caixa">Caixa</option>
-                                </select>
-                              </div>
-                              <div>
-                                <Label htmlFor={`manual-price-${item.id}`} className="text-sm text-muted-foreground">
-                                  Valor (USD)
-                                </Label>
-                                <Input
-                                  id={`manual-price-${item.id}`}
-                                  type="number"
-                                  min="0"
-                                  step="0.01"
-                                  value={item.unitPrice || ''}
-                                  onChange={(e) => updateManualItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
-                                  placeholder="0.00"
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor={`manual-weight-${item.id}`} className="text-sm text-muted-foreground">
-                                  Peso
-                                </Label>
-                                <Input
-                                  id={`manual-weight-${item.id}`}
-                                  type="number"
-                                  min="0"
-                                  step="0.01"
-                                  value={item.weight || ''}
-                                  onChange={(e) => updateManualItem(item.id, 'weight', parseFloat(e.target.value) || 0)}
-                                  placeholder="0"
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor={`manual-weightunit-${item.id}`} className="text-sm text-muted-foreground">
-                                  Unidade
-                                </Label>
-                                <select
-                                  id={`manual-weightunit-${item.id}`}
-                                  value={item.weightUnit || 'kg'}
-                                  onChange={(e) => updateManualItem(item.id, 'weightUnit', e.target.value as 'kg' | 'lbs')}
-                                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                                >
-                                  <option value="kg">kg</option>
-                                  <option value="lbs">lbs</option>
-                                </select>
-                              </div>
-                              <div className="text-right">
-                                <Label className="text-sm text-muted-foreground">Total</Label>
-                                <div className="font-semibold">
-                                  ${(item.quantity * item.unitPrice).toFixed(2)}
-                                </div>
-                              </div>
-                              <div className="flex justify-center">
-                                <Button
-                                  type="button"
-                                  onClick={() => removeManualItem(item.id)}
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-destructive hover:text-destructive"
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
+                        {manualItems.map((item) => (
+                          <div key={item.id} className="grid grid-cols-1 md:grid-cols-5 gap-2 items-end p-3 border rounded-lg bg-background">
+                            <div>
+                              <Label htmlFor={`manual-product-${item.id}`} className="text-sm text-muted-foreground">
+                                Nome do Produto
+                              </Label>
+                              <Input
+                                id={`manual-product-${item.id}`}
+                                type="text"
+                                value={item.product}
+                                onChange={(e) => updateManualItem(item.id, 'product', e.target.value)}
+                                placeholder="Nome do produto"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`manual-qty-${item.id}`} className="text-sm text-muted-foreground">
+                                Quantidade
+                              </Label>
+                              <Input
+                                id={`manual-qty-${item.id}`}
+                                type="number"
+                                min="0"
+                                value={item.quantity || ''}
+                                onChange={(e) => updateManualItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
+                                placeholder="0"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`manual-price-${item.id}`} className="text-sm text-muted-foreground">
+                                Valor Unitário (USD)
+                              </Label>
+                              <Input
+                                id={`manual-price-${item.id}`}
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={item.unitPrice || ''}
+                                onChange={(e) => updateManualItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                                placeholder="0.00"
+                              />
+                            </div>
+                            <div className="text-right">
+                              <Label className="text-sm text-muted-foreground">Total</Label>
+                              <div className="font-semibold">
+                                ${(item.quantity * item.unitPrice).toFixed(2)}
                               </div>
                             </div>
-                          );
-                        })}
+                            <div className="flex justify-center">
+                              <Button
+                                type="button"
+                                onClick={() => removeManualItem(item.id)}
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                     
@@ -738,25 +617,19 @@ const InvoiceGenerator: React.FC = () => {
                               const globalIndex = `${categoryIndex}-${index}`;
                               const iconConfig = getProductIcon(product.name, category.name);
                               const IconComponent = iconConfig.icon;
-                              const quantity = productQuantities[product.name] || 0;
-                              const price = productPrices[product.name] || 0;
-                              const weight = productWeights[product.name] || 0;
-                              const unit = productUnits[product.name] || 'unidade';
-                              const weightUnit = productWeightUnits[product.name] || 'kg';
-                              
                               return (
                                 <div key={globalIndex} className="p-3 bg-white border rounded-lg shadow-sm">
-                                  <div className="grid grid-cols-12 gap-2 items-center">
-                                    {/* Nome do produto + ícone */}
-                                    <div className="col-span-3 flex items-center gap-2">
+                                  <div className="grid grid-cols-12 gap-3 items-center">
+                                    {/* Nome do produto + ícone - 33% (4 colunas de 12) */}
+                                    <div className="col-span-4 flex items-center gap-2">
                                       <div className={`w-6 h-6 rounded-lg ${iconConfig.bgColor} flex items-center justify-center flex-shrink-0`}>
                                         <IconComponent className={`w-4 h-4 ${iconConfig.color}`} />
                                       </div>
                                       <Label className="text-xs font-medium leading-tight">{product.name}</Label>
                                     </div>
                                     
-                                    {/* Quantidade */}
-                                    <div className="col-span-1">
+                                    {/* Quantidade - 22% (2.67 colunas) */}
+                                    <div className="col-span-2">
                                       <Label htmlFor={`qty-${globalIndex}`} className="text-xs text-muted-foreground">
                                         Qtd
                                       </Label>
@@ -765,30 +638,14 @@ const InvoiceGenerator: React.FC = () => {
                                         id={`qty-${globalIndex}`}
                                         type="number"
                                         min="0"
-                                        value={quantity || ''}
+                                        value={productQuantities[product.name] || ''}
                                         onChange={(e) => updateQuantity(product.name, parseInt(e.target.value) || 0)}
                                         placeholder="0"
                                       />
                                     </div>
                                     
-                                    {/* Tipo - Unidade ou Caixa */}
-                                    <div className="col-span-2">
-                                      <Label htmlFor={`unit-${globalIndex}`} className="text-xs text-muted-foreground">
-                                        Tipo
-                                      </Label>
-                                      <select
-                                        id={`unit-${globalIndex}`}
-                                        value={unit}
-                                        onChange={(e) => updateUnit(product.name, e.target.value as 'unidade' | 'caixa')}
-                                        className="flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs ring-offset-background"
-                                      >
-                                        <option value="unidade">Unidade</option>
-                                        <option value="caixa">Caixa</option>
-                                      </select>
-                                    </div>
-
-                                    {/* Valor */}
-                                    <div className="col-span-2">
+                                    {/* Valor Unitário - 22% (3 colunas) */}
+                                    <div className="col-span-3">
                                       <Label htmlFor={`price-${globalIndex}`} className="text-xs text-muted-foreground">
                                         Valor (USD)
                                       </Label>
@@ -798,50 +655,17 @@ const InvoiceGenerator: React.FC = () => {
                                         type="number"
                                         min="0"
                                         step="0.01"
-                                        value={price || ''}
+                                        value={productPrices[product.name] || ''}
                                         onChange={(e) => updatePrice(product.name, parseFloat(e.target.value) || 0)}
                                         placeholder="0.00"
                                       />
                                     </div>
-
-                                    {/* Peso */}
-                                    <div className="col-span-1">
-                                      <Label htmlFor={`weight-${globalIndex}`} className="text-xs text-muted-foreground">
-                                        Peso
-                                      </Label>
-                                      <Input
-                                        className="h-8 text-xs"
-                                        id={`weight-${globalIndex}`}
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        value={weight || ''}
-                                        onChange={(e) => updateWeight(product.name, parseFloat(e.target.value) || 0)}
-                                        placeholder="0"
-                                      />
-                                    </div>
-
-                                    {/* Unidade de Peso */}
-                                    <div className="col-span-1">
-                                      <Label htmlFor={`weightunit-${globalIndex}`} className="text-xs text-muted-foreground">
-                                        Un.
-                                      </Label>
-                                      <select
-                                        id={`weightunit-${globalIndex}`}
-                                        value={weightUnit}
-                                        onChange={(e) => updateWeightUnit(product.name, e.target.value as 'kg' | 'lbs')}
-                                        className="flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs ring-offset-background"
-                                      >
-                                        <option value="kg">kg</option>
-                                        <option value="lbs">lbs</option>
-                                      </select>
-                                    </div>
                                     
-                                    {/* Total */}
-                                    <div className="col-span-2 text-right">
+                                    {/* Total - 22% (3 colunas) */}
+                                    <div className="col-span-3 text-right">
                                       <Label className="text-xs text-muted-foreground">Total</Label>
                                       <div className="font-semibold text-xs bg-muted p-2 rounded text-center">
-                                        ${(quantity * price).toFixed(2)}
+                                        ${((productQuantities[product.name] || 0) * (productPrices[product.name] || 0)).toFixed(2)}
                                       </div>
                                     </div>
                                   </div>
@@ -1014,9 +838,7 @@ const InvoiceGenerator: React.FC = () => {
                       <tr className="bg-muted">
                         <th className="border border-border p-1.5 text-left text-xs">Produto</th>
                         <th className="border border-border p-1.5 text-center text-xs">Qtd</th>
-                        <th className="border border-border p-1.5 text-center text-xs">Tipo</th>
                         <th className="border border-border p-1.5 text-center text-xs">Valor (USD)</th>
-                        <th className="border border-border p-1.5 text-center text-xs">Peso (kg)</th>
                         <th className="border border-border p-1.5 text-center text-xs">Total (USD)</th>
                       </tr>
                     </thead>
@@ -1025,26 +847,24 @@ const InvoiceGenerator: React.FC = () => {
                         <tr key={index}>
                           <td className="border border-border p-1.5 text-xs">{item.product}</td>
                           <td className="border border-border p-1.5 text-center text-xs">{item.quantity}</td>
-                          <td className="border border-border p-1.5 text-center text-xs capitalize">{item.unit}</td>
                           <td className="border border-border p-1.5 text-center text-xs">${item.unitPrice.toFixed(2)}</td>
-                          <td className="border border-border p-1.5 text-center text-xs">{item.weight || '-'}</td>
                           <td className="border border-border p-1.5 text-center text-xs">${item.total.toFixed(2)}</td>
                         </tr>
                       ))}
                     </tbody>
                     <tfoot>
                       <tr className="bg-muted">
-                        <td colSpan={5} className="border border-border p-1.5 text-right font-semibold text-xs">Subtotal</td>
+                        <td colSpan={3} className="border border-border p-1.5 text-right font-semibold text-xs">Subtotal</td>
                         <td className="border border-border p-1.5 text-center text-xs">${invoiceData?.grandTotal.toFixed(2)}</td>
                       </tr>
                       {invoiceData?.discount && invoiceData.discount > 0 && (
                         <tr className="bg-muted">
-                          <td colSpan={5} className="border border-border p-1.5 text-right font-semibold text-red-600 text-xs">Desconto</td>
+                          <td colSpan={3} className="border border-border p-1.5 text-right font-semibold text-red-600 text-xs">Desconto</td>
                           <td className="border border-border p-1.5 text-center text-red-600 text-xs">-${invoiceData.discount.toFixed(2)}</td>
                         </tr>
                       )}
                       <tr className="bg-primary text-primary-foreground font-bold">
-                        <td colSpan={5} className="border border-border p-1.5 text-right text-sm">Total Final</td>
+                        <td colSpan={3} className="border border-border p-1.5 text-right text-sm">Total Final</td>
                         <td className="border border-border p-1.5 text-center text-sm">${invoiceData?.finalTotal.toFixed(2)}</td>
                       </tr>
                     </tfoot>
